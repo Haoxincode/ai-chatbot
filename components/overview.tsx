@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-
-import { MessageIcon, VercelIcon } from './icons';
+import { MessageIcon } from './icons';
 
 export const Overview = () => {
   return (
@@ -15,36 +13,25 @@ export const Overview = () => {
     >
       <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
         <p className="flex flex-row justify-center gap-4 items-center">
-          <VercelIcon size={32} />
-          <span>+</span>
           <MessageIcon size={32} />
         </p>
+        <h1 className="text-2xl font-bold">深度思考对话器</h1>
         <p>
-          This is an{' '}
-          <Link
-            className="font-medium underline underline-offset-4"
-            href="https://github.com/vercel/ai-chatbot"
-            target="_blank"
-          >
-            open source
-          </Link>{' '}
-          chatbot template built with Next.js and the AI SDK by Vercel. It uses
-          the{' '}
-          <code className="rounded-md bg-muted px-1 py-0.5">streamText</code>{' '}
-          function in the server and the{' '}
-          <code className="rounded-md bg-muted px-1 py-0.5">useChat</code> hook
-          on the client to create a seamless chat experience.
+          欢迎来到深度思考的世界！这里是一个让你放飞思维、探索内心的地方。
+          通过与这个对话器交流，你可以学会如何进行更深层次的思考。
         </p>
         <p>
-          You can learn more about the AI SDK by visiting the{' '}
-          <Link
-            className="font-medium underline underline-offset-4"
-            href="https://sdk.vercel.ai/docs"
-            target="_blank"
-          >
-            docs
-          </Link>
-          .
+          以下是一些帮助你开始深度思考的建议：
+        </p>
+        <ul className="list-disc text-left pl-6">
+          <li>提出"为什么"的问题，探索事物的本质</li>
+          <li>尝试从不同角度看待问题</li>
+          <li>思考事物之间的联系</li>
+          <li>质疑你的假设，挑战自己的观点</li>
+          <li>反思你的经历，寻找其中的意义</li>
+        </ul>
+        <p>
+          准备好了吗？开始一场深度思考的旅程吧！
         </p>
       </div>
     </motion.div>

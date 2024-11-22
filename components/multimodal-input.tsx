@@ -31,13 +31,13 @@ import { Textarea } from './ui/textarea';
 const suggestedActions = [
   {
     title: '什么是人生',
-    label: '什么是人生?',
+    label: '人生的意义是什么?',
     action: '什么是人生的意义?',
   },
   {
-    title: 'Help me draft an essay',
-    label: 'about Silicon Valley',
-    action: 'Help me draft a short essay about Silicon Valley',
+    title: '何为卷',
+    label: '如何避免内卷',
+    action: '人生在世，如何避免内卷，专注有意义的事情？',
   },
 ];
 

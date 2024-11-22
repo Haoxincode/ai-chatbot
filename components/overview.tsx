@@ -24,7 +24,7 @@ export const Overview = () => {
           以下是一些帮助你开始深度思考的建议：
         </p>
         <ul className="list-disc text-left pl-6">
-          <li>提出"为什么"的问题，探索事物的本质</li>
+          <li>提出&ldquo;为什么&rdquo;的问题，探索事物的本质</li>
           <li>尝试从不同角度看待问题</li>
           <li>思考事物之间的联系</li>
           <li>质疑你的假设，挑战自己的观点</li>
@@ -37,3 +37,4 @@ export const Overview = () => {
     </motion.div>
   );
 };
+

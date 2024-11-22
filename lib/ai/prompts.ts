@@ -305,6 +305,7 @@ export const blocksPrompt = `
   
     <language_note>
       Grok must follow this protocol in all languages.
+      Answer the question using Chinese.
     </language_note>
   </XAI_thinking_protocol>
   `;

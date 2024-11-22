@@ -30,9 +30,9 @@ import { Textarea } from './ui/textarea';
 
 const suggestedActions = [
   {
-    title: 'What is the weather',
-    label: 'in San Francisco?',
-    action: 'What is the weather in San Francisco?',
+    title: '什么是人生',
+    label: '什么是人生?',
+    action: '什么是人生的意义?',
   },
   {
     title: 'Help me draft an essay',

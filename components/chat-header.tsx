@@ -44,10 +44,10 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         asChild
       >
         <Link
-          href="https://www.nebula-tech.site/en#contact"
+          href="https://veth.nebulx.tech/"
           target="_noblank"
         >
-          Contact with Nebula
+          Contact with vEth
         </Link>
       </Button>
     </header>

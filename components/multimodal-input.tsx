@@ -30,14 +30,14 @@ import { Textarea } from './ui/textarea';
 
 const suggestedActions = [
   {
-    title: 'What is the weather',
-    label: 'in San Francisco?',
-    action: 'What is the weather in San Francisco?',
+    title: '生成时序图',
+    label: '用于雨天自动关窗功能',
+    action: '请为汽车下雨自动关闭车窗功能生成一个时序图',
   },
   {
-    title: 'Help me draft an essay',
-    label: 'about Silicon Valley',
-    action: 'Help me draft a short essay about Silicon Valley',
+    title: '创建服务接口',
+    label: '用于车载娱乐系统',
+    action: '为车载娱乐系统创建一个服务接口，包括音频播放、导航和蓝牙连接功能',
   },
 ];
 

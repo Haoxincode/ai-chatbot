@@ -12,7 +12,7 @@ import {
   type SetStateAction,
   useCallback,
   useEffect,
-  useState,
+  useState,useRef
 } from 'react';
 import { toast } from 'sonner';
 import useSWR, { useSWRConfig } from 'swr';
@@ -36,10 +36,38 @@ import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { useScrollToBottom } from './use-scroll-to-bottom';
 import { VersionFooter } from './version-footer';
+import ReactMarkdown from 'react-markdown'
+
+import Diagram from '@zenuml/core'
+
+interface ZenUMLRendererProps {
+    code: string
+    height: string
+    width: string
+  }
+  
+  function ZenUMLRenderer({ code, height, width }: ZenUMLRendererProps) {
+    const containerRef = useRef<HTMLDivElement>(null)
+  
+    useEffect(() => {
+      if (containerRef.current) {
+        const diagram = new Diagram(containerRef.current)
+        diagram.render(code)
+      }
+    }, [code])
+  
+    return (
+      <div 
+        ref={containerRef} 
+        style={{ height, width, border: '1px solid #ddd', borderRadius: '4px' }}
+      />
+    )
+  }
 export interface UIBlock {
   title: string;
   documentId: string;
   content: string;
+  sequenceDiagram?:any
   isVisible: boolean;
   status: 'streaming' | 'idle';
   boundingBox: {
@@ -136,6 +164,63 @@ export function Block({
     mutateDocuments();
   }, [block.status, mutateDocuments]);
 
+
+  const [diagramCode, setDiagramCode] = useState<string | null>(null);
+  const [description, setDescription] = useState<string | null>(null);
+
+  useEffect(() => {
+      // 假设您在这里获取 functionDesign 的输出
+      const { content } = block; // 根据实际情况调整
+
+      console.log(block)
+      if(content && content.indexOf('sequencediagram')>-1){
+        try{
+          let relsequenceDiagram=JSON.parse(content)
+          console.log(relsequenceDiagram)
+          if(relsequenceDiagram &&relsequenceDiagram.sequencediagram){
+            setDiagramCode(relsequenceDiagram.sequencediagram)
+          }
+          if(relsequenceDiagram &&relsequenceDiagram.markdownContent){
+            setDescription(relsequenceDiagram.markdownContent)
+          }
+        }catch(e){
+          console.log(e)
+        }
+        
+      }
+      
+      // if (sequenceDiagram && sequenceDiagram.includes('sequenceDescription')) {
+      //   let str= sequenceDiagram.split('outputs')[1].replace(':','')
+      //   let rel=str.split('sequenceDescription')[0]
+        
+      //   try{
+      //     let se=str.split("sequencediagram")[1]
+      //     se=se.split(",")[0]
+      //     const sequenceDiagramCode = se.replace(/```zenuml\n|\n```/g, '')
+      //     if(sequenceDiagramCode){
+      //       setDiagramCode(sequenceDiagramCode);
+      //     }
+      //     if(str.indexOf('error')){
+      //       let other=str.split('sequenceDescription')[1].replace(":","")
+      //       let others=other.split('}')[0]
+      //       other= others.replace(/```markdown\n|\n```/g, '')
+      //       if(other){
+      //         setDescription(other);
+      //       }
+      //     }else{
+      //       let other=str.split('sequenceDescription')[1].replace(":","")
+      //       other= other.replace(/```markdown\n|\n```/g, '')
+      //       if(other){
+      //         setDescription(other);
+      //       }
+      //     }
+      //   }catch(e){
+      //     console.error('parse error',sequenceDiagram,rel)
+      //   }
+       
+      // }
+      
+  }, [block]);
   const { mutate } = useSWRConfig();
   const [isContentDirty, setIsContentDirty] = useState(false);
 
@@ -315,7 +400,7 @@ export function Block({
                 className="shrink-0 min-w-[24px] min-h-[24px]"
               />
             </div>
-
+           
             <form className="flex flex-row gap-2 relative items-end w-full px-4 pb-4">
               <MultimodalInput
                 chatId={chatId}
@@ -514,8 +599,25 @@ export function Block({
         </div>
 
         <div className="prose dark:prose-invert dark:bg-muted bg-background h-full overflow-y-scroll px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
-          <div className="flex flex-row max-w-[600px] mx-auto">
-            {isDocumentsFetching && !block.content ? (
+          {
+            diagramCode&&
+            ( <div className="prose dark:prose-invert dark:bg-muted bg-background px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
+              {diagramCode && (
+                <ZenUMLRenderer code={diagramCode} height="100%" width="100%" />
+              )}{/* 其他内容 */}
+              {description && (
+                <div className="mt-4 bg-zinc-950 text-zinc-50 rounded-lg p-6">
+                  <h3 className="text-md font-semibold mb-2">Sequence Description</h3>
+                  <div className="prose prose-invert max-w-none">
+                    <ReactMarkdown>{description}</ReactMarkdown>
+                  </div>
+                </div>
+              )}
+            </div>)
+          }
+          {!diagramCode &&<div className="flex flex-row max-w-[600px] mx-auto">
+         
+            {isDocumentsFetching && !block.content&&!diagramCode ? (
               <DocumentSkeleton />
             ) : mode === 'edit' ? (
               <Editor
@@ -536,7 +638,7 @@ export function Block({
                 newContent={getDocumentContentById(currentVersionIndex)}
               />
             )}
-
+            
             {suggestions ? (
               <div className="md:hidden h-dvh w-12 shrink-0" />
             ) : null}
@@ -553,7 +655,7 @@ export function Block({
                 />
               )}
             </AnimatePresence>
-          </div>
+          </div>}
         </div>
 
         <AnimatePresence>

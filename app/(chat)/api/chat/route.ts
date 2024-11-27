@@ -35,12 +35,13 @@ type AllowedTools =
   | 'createDocument'
   | 'updateDocument'
   | 'requestSuggestions'
+  | 'functionDesign'
   | 'getWeather';
 
 const blocksTools: AllowedTools[] = [
   'createDocument',
   'updateDocument',
-  'requestSuggestions',
+  'requestSuggestions','functionDesign'
 ];
 
 const weatherTools: AllowedTools[] = ['getWeather'];
@@ -109,6 +110,116 @@ export async function POST(request: Request) {
 
           const weatherData = await response.json();
           return weatherData;
+        },
+      },
+      functionDesign:{
+        description: 'Run a Dify workflow and parse the result',
+        parameters: z.object({
+          useCase: z.string().describe('The use case for the workflow'),
+        }),
+        execute: async ({ useCase }) => {
+          const apiKey = process.env.DIFY_API_KEY; // 确保在环境变量中设置了DIFY_API_KEY
+          if (!apiKey) {
+            throw new Error('DIFY_API_KEY is not set');
+          }
+          
+          const streamingData = new StreamData();
+          const id = generateUUID();
+          let draftText = '';
+
+          streamingData.append({
+            type: 'id',
+            content: id,
+          });
+
+          streamingData.append({
+            type: 'title',
+            content: useCase,
+          });
+
+          streamingData.append({
+            type: 'clear',
+            content: '',
+          });
+          try {
+            const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                inputs: { usecase:useCase },
+                response_mode: "blocking",
+                user: "v0-publish"
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`+apiKey+JSON.stringify(response));
+            }
+
+            const data = await response.json();
+            let result={sequencediagram:'',markdownContent :""}
+            if (data.data && data.data.outputs) {
+              if (data.data.outputs.sequencediagram) {
+                const sequenceDiagramCode = data.data.outputs.sequencediagram.replace(/```zenuml\n|\n```/g, '')
+                result.sequencediagram=sequenceDiagramCode
+              }
+              if (data.data.outputs.sequenceDescription) {
+                // Extract markdown content from the code block
+                const markdownContent = data.data.outputs.sequenceDescription.replace(/```markdown\n|\n```/g, '')
+                result.markdownContent=markdownContent
+              }
+              
+              streamingData.append({ type: 'design', content: JSON.stringify(result) }); 
+            }else {
+              throw new Error('Invalid response format')
+            }
+            if (data.error) {
+              throw new Error(`Workflow error: ${data.error}`);
+            }
+
+            // const reader = response.body?.getReader(); // 获取读取器
+            // const decoder = new TextDecoder("utf-8");
+            // let result = { sequencediagram: '', markdownContent: "" };
+            // if(!reader){
+            //   throw new Error(`Workflow error: no result`);
+            // }
+            // while (true) {
+            //   const { done, value } = await reader.read(); // 读取流数据
+            //   if (done) break;
+            //   const chunk = decoder.decode(value, { stream: true });
+            //   // 处理流数据并更新 result
+            //   // 这里可以根据实际返回的数据格式进行解析和更新 result
+            //   // 例如：
+            //   let text= chunk.data.outputs.text
+            //   draftText += chunk;
+            //   streamingData.append({ type: 'design', content: chunk }); // 将流数据添加到 streamingData
+            // }
+
+            streamingData.append({ type: 'finish', content: '' }); // 结束流
+            if (session.user?.id) {
+              await saveDocument({
+                id,
+                title:useCase,
+                content: JSON.stringify(result),
+                userId: session.user.id,
+              });
+            }
+  
+            return {
+              id,
+              title:useCase,
+              content: 'A FunctionDesign was created and is now visible to the user.',
+            };
+          } catch (error:any) {
+            console.error('Error running Dify workflow:', error);
+            return {
+              error: 'Failed to run Dify workflow',
+              details: error.message,
+            };
+          }
         },
       },
       createDocument: {

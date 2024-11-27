@@ -2,9 +2,9 @@ import type { SetStateAction } from 'react';
 
 import type { UIBlock } from './block';
 import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from './icons';
-
+import {Paintbrush} from 'lucide-react'
 const getActionText = (
-  type: 'create' | 'update' | 'request-suggestions',
+  type: 'create' | 'update' | 'request-suggestions'|"functionDesign",
   tense: 'present' | 'past',
 ) => {
   switch (type) {
@@ -16,13 +16,15 @@ const getActionText = (
       return tense === 'present'
         ? 'Adding suggestions'
         : 'Added suggestions to';
+    case "functionDesign":
+      return tense === 'present'?"Designing":"Designed"
     default:
       return null;
   }
 };
 
 interface DocumentToolResultProps {
-  type: 'create' | 'update' | 'request-suggestions';
+  type: 'create' | 'update' | 'request-suggestions'|'functionDesign';
   result: { id: string; title: string };
   block: UIBlock;
   setBlock: (value: SetStateAction<UIBlock>) => void;
@@ -50,6 +52,7 @@ export function DocumentToolResult({
         setBlock({
           documentId: result.id,
           content: '',
+          sequenceDiagram:"",
           title: result.title,
           isVisible: true,
           status: 'idle',
@@ -64,6 +67,8 @@ export function DocumentToolResult({
           <PencilEditIcon />
         ) : type === 'request-suggestions' ? (
           <MessageIcon />
+        ) :type === 'functionDesign' ? (
+          <Paintbrush size={16}  />
         ) : null}
       </div>
       <div className="text-left">
@@ -74,7 +79,7 @@ export function DocumentToolResult({
 }
 
 interface DocumentToolCallProps {
-  type: 'create' | 'update' | 'request-suggestions';
+  type: 'create' | 'update' | 'request-suggestions'|'functionDesign';
   args: { title: string };
   setBlock: (value: SetStateAction<UIBlock>) => void;
 }
@@ -113,7 +118,9 @@ export function DocumentToolCall({
             <PencilEditIcon />
           ) : type === 'request-suggestions' ? (
             <MessageIcon />
-          ) : null}
+          ) :type === 'functionDesign' ? (
+            <Paintbrush size={16} />
+          )  : null}
         </div>
 
         <div className="text-left">

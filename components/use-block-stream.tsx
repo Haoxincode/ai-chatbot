@@ -7,7 +7,7 @@ import type { Suggestion } from '@/lib/db/schema';
 import type { UIBlock } from './block';
 
 type StreamingDelta = {
-  type: 'text-delta' | 'title' | 'id' | 'suggestion' | 'clear' | 'finish';
+  type: 'text-delta'|"design" | 'title' | 'id' | 'suggestion' | 'clear' | 'finish';
   content: string | Suggestion;
 };
 
@@ -61,6 +61,17 @@ export function useBlockStream({
               draftBlock.content.length < 250
                 ? true
                 : draftBlock.isVisible,
+            status: 'streaming',
+          };
+        case 'design':
+          return {
+            ...draftBlock,
+            sequenceDiagram:draftBlock.content,
+            isVisible:
+              draftBlock.status === 'streaming' &&
+              draftBlock.content.length > 200 &&draftBlock.content.length < 250
+              ? true
+              : draftBlock.isVisible,
             status: 'streaming',
           };
 

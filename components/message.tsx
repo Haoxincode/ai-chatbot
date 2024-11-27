@@ -14,7 +14,6 @@ import { Markdown } from './markdown';
 import { MessageActions } from './message-actions';
 import { PreviewAttachment } from './preview-attachment';
 import { Weather } from './weather';
-
 export const PreviewMessage = ({
   chatId,
   message,
@@ -88,7 +87,16 @@ export const PreviewMessage = ({
                           block={block}
                           setBlock={setBlock}
                         />
-                      ) : (
+                      ) : toolName === 'functionDesign' ?(
+                          <DocumentToolResult 
+                            type="functionDesign"
+                            result={result}
+                            block={block}
+                            setBlock={setBlock} 
+                        />
+                      )
+                      :
+                      (
                         <pre>{JSON.stringify(result, null, 2)}</pre>
                       )}
                     </div>
@@ -118,6 +126,12 @@ export const PreviewMessage = ({
                     ) : toolName === 'requestSuggestions' ? (
                       <DocumentToolCall
                         type="request-suggestions"
+                        args={args}
+                        setBlock={setBlock}
+                      />
+                    ) : toolName === 'functionDesign' ? (
+                      <DocumentToolCall
+                        type="functionDesign"
                         args={args}
                         setBlock={setBlock}
                       />

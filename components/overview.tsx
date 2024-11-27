@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 
-import { MessageIcon, VercelIcon } from './icons';
+import { MessageIcon } from './icons';
 
 export const Overview = () => {
   return (
@@ -15,36 +14,23 @@ export const Overview = () => {
     >
       <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
         <p className="flex flex-row justify-center gap-4 items-center">
-          <VercelIcon size={32} />
-          <span>+</span>
           <MessageIcon size={32} />
         </p>
         <p>
-          This is an{' '}
-          <Link
-            className="font-medium underline underline-offset-4"
-            href="https://github.com/vercel/ai-chatbot"
-            target="_blank"
-          >
-            open source
-          </Link>{' '}
-          chatbot template built with Next.js and the AI SDK by Vercel. It uses
-          the{' '}
-          <code className="rounded-md bg-muted px-1 py-0.5">streamText</code>{' '}
-          function in the server and the{' '}
-          <code className="rounded-md bg-muted px-1 py-0.5">useChat</code> hook
-          on the client to create a seamless chat experience.
+          欢迎使用 Nebula Tech Design，这是一个革命性的AI驱动汽车开发工具链。我们的平台集成了
+          <span className="font-medium">时序图生成</span>、
+          <span className="font-medium">服务接口定义</span>和
+          <span className="font-medium">代码实现</span>等关键功能，
+          旨在加速EEA（电子电气架构）设计的迭代过程。
         </p>
         <p>
-          You can learn more about the AI SDK by visiting the{' '}
-          <Link
-            className="font-medium underline underline-offset-4"
-            href="https://sdk.vercel.ai/docs"
-            target="_blank"
-          >
-            docs
-          </Link>
-          .
+          通过与AI对话，您可以轻松创建复杂的系统交互图，生成清晰的服务接口，
+          并获取符合最佳实践的代码实现。我们的工具链旨在提高开发效率，激发创新，
+          并推动智能汽车技术的进步。
+        </p>
+        <p>
+          开始您的AI辅助汽车开发之旅，体验未来汽车工程的智能化革命。如果您有任何问题或需要帮助，
+          请随时与我们的AI助手交流。
         </p>
       </div>
     </motion.div>

@@ -35,13 +35,15 @@ type AllowedTools =
   | 'createDocument'
   | 'updateDocument'
   | 'requestSuggestions'
-  | 'functionDesign'
+  | 'functionDesign'|"diagram"|
+  "updateDesign"
   | 'getWeather';
 
 const blocksTools: AllowedTools[] = [
   'createDocument',
   'updateDocument',
-  'requestSuggestions','functionDesign'
+  "updateDesign",
+  'requestSuggestions','functionDesign',"diagram"
 ];
 
 const weatherTools: AllowedTools[] = ['getWeather'];
@@ -89,6 +91,28 @@ export async function POST(request: Request) {
   });
 
   const streamingData = new StreamData();
+
+  const runDifyWorkflow=async(usecase:string,apiKey:string)=>{
+    const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: { usecase:usecase },
+        response_mode: "blocking",
+        user: "v0-publish"
+      }),
+    })
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`+apiKey+JSON.stringify(response));
+    }
+  
+    const data = await response.json()
+    return data
+  }
 
   const result = await streamText({
     model: customModel(model.apiIdentifier),
@@ -142,24 +166,7 @@ export async function POST(request: Request) {
             content: '',
           });
           try {
-            const response = await fetch('https://api.dify.ai/v1/workflows/run', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                inputs: { usecase:useCase },
-                response_mode: "blocking",
-                user: "v0-publish"
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`+apiKey+JSON.stringify(response));
-            }
-
-            const data = await response.json();
+            const data = await runDifyWorkflow(useCase,apiKey);
             let result={sequencediagram:'',markdownContent :""}
             if (data.data && data.data.outputs) {
               if (data.data.outputs.sequencediagram) {
@@ -221,6 +228,136 @@ export async function POST(request: Request) {
             };
           }
         },
+      },
+      updateDesign: {
+        description: 'Update a functionDesign with the given usecase',
+        parameters: z.object({
+          id: z.string().describe('The ID of the document to update'),
+          useCase: z.string().describe('The use case for the workflow'),
+        }),
+        execute: async ({ id, useCase }) => {
+          const document = await getDocumentById({ id });
+
+          if (!document) {
+            return {
+              error: 'Document not found',
+            };
+          }
+          const apiKey = process.env.DIFY_API_KEY; // 确保在环境变量中设置了DIFY_API_KEY
+          if (!apiKey) {
+            throw new Error('DIFY_API_KEY is not set');
+          }
+
+          const { content: currentContent } = document;
+          let draftText = '';
+
+          streamingData.append({
+            type: 'clear',
+            content: document.title,
+          });
+
+          try {
+            const data = await runDifyWorkflow(useCase,apiKey);
+            let result={sequencediagram:'',markdownContent :""}
+            if (data.data && data.data.outputs) {
+              if (data.data.outputs.sequencediagram) {
+                const sequenceDiagramCode = data.data.outputs.sequencediagram.replace(/```zenuml\n|\n```/g, '')
+                result.sequencediagram=sequenceDiagramCode
+              }
+              if (data.data.outputs.sequenceDescription) {
+                // Extract markdown content from the code block
+                const markdownContent = data.data.outputs.sequenceDescription.replace(/```markdown\n|\n```/g, '')
+                result.markdownContent=markdownContent
+              }
+              
+              streamingData.append({ type: 'design', content: JSON.stringify(result) }); 
+            }else {
+              throw new Error('Invalid response format')
+            }
+            if (data.error) {
+              throw new Error(`Workflow error: ${data.error}`);
+            }
+            if (session.user?.id) {
+              await saveDocument({
+                id,
+                title: document.title,
+                content: draftText,
+                userId: session.user.id,
+              });
+            }
+  
+            return {
+              id,
+              title: document.title,
+              content: 'The functionDesign has been updated successfully.',
+            };
+          } catch (error:any) {
+            console.error('Error running Dify workflow:', error);
+            return {
+              error: 'Failed to run Dify workflow',
+              details: error.message,
+            };
+          }
+        }
+      },
+      diagram:{
+        description:"creat a diagram for a use case",
+        parameters: z.object({
+          useCase: z.string(),
+        }),
+        execute: async ({ useCase }) => {
+          try {
+            const apiKey = process.env.DIFY_API_DIAGRAM_KEY; // 确保在环境变量中设置了DIFY_API_KEY
+          if (!apiKey) {
+            throw new Error('DIFY_API_KEY is not set');
+          }
+          
+          const streamingData = new StreamData();
+          const id = generateUUID();
+          let draftText = '';
+
+          streamingData.append({
+            type: 'id',
+            content: id,
+          });
+
+          streamingData.append({
+            type: 'title',
+            content: useCase,
+          });
+
+          streamingData.append({
+            type: 'clear',
+            content: '',
+          });
+            const data = await runDifyWorkflow(useCase,apiKey);
+            const result=JSON.parse(data.data.outputs.serviceinterface).serviceInterfaces
+            
+            streamingData.append({ type: 'diagram', content: JSON.stringify({serviceInterface:result}) }); 
+            streamingData.append({ type: 'finish', content: '' }); // 结束流
+            if (session.user?.id) {
+              await saveDocument({
+                id,
+                title:useCase,
+                content: JSON.stringify(result),
+                userId: session.user.id,
+              });
+            }
+  
+            return {
+              id,
+              title:useCase,
+              content: 'A Diagram was created and is now visible to the user.',
+            };
+          }catch(e:any){
+            console.error('Error running Dify workflow:', e);
+            return {
+              error: 'Failed to run Dify workflow',
+              details: e.message,
+            };
+          }
+        }
+
       },
       createDocument: {
         description: 'Create a document for a writing activity',

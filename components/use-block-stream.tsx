@@ -5,9 +5,10 @@ import { useSWRConfig } from 'swr';
 import type { Suggestion } from '@/lib/db/schema';
 
 import type { UIBlock } from './block';
+import Diagram from '@zenuml/core';
 
 type StreamingDelta = {
-  type: 'text-delta'|"design" | 'title' | 'id' | 'suggestion' | 'clear' | 'finish';
+  type: 'text-delta'|"design"|"diagram" | 'title' | 'id' | 'suggestion' | 'clear' | 'finish';
   content: string | Suggestion;
 };
 
@@ -74,7 +75,17 @@ export function useBlockStream({
               : draftBlock.isVisible,
             status: 'streaming',
           };
-
+        case "diagram":
+          return {
+            ...draftBlock,
+            diagram:draftBlock.content,
+            isVisible:
+              draftBlock.status === 'streaming' &&
+              draftBlock.content.length > 200 &&draftBlock.content.length < 250
+              ? true
+              : draftBlock.isVisible,
+            status: 'streaming',
+          }
         case 'suggestion':
           setTimeout(() => {
             setOptimisticSuggestions((currentSuggestions) => [

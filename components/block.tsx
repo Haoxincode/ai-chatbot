@@ -7,6 +7,20 @@ import type {
 import cx from 'classnames';
 import { formatDistance } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
+import ReactFlow, {
+  Node,
+  Edge,
+  addEdge,
+  Background,
+  ConnectionMode,
+  Controls,
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+  Handle,
+  Position,
+  Connection,
+} from 'reactflow'
 import {
   type Dispatch,
   type SetStateAction,
@@ -21,7 +35,7 @@ import {
   useDebounceCallback,
   useWindowSize,
 } from 'usehooks-ts';
-
+import {createNodes,getLayoutedElements,ServiceInterfaceNode,downloadIDL,EventNode,FieldNode,MethodNode,generateIDL}from './diagram'
 import type { Document, Suggestion, Vote } from '@/lib/db/schema';
 import { fetcher } from '@/lib/utils';
 
@@ -39,6 +53,7 @@ import { VersionFooter } from './version-footer';
 import ReactMarkdown from 'react-markdown'
 
 import Diagram from '@zenuml/core'
+import { Download } from 'lucide-react';
 
 interface ZenUMLRendererProps {
     code: string
@@ -168,12 +183,28 @@ export function Block({
   const [diagramCode, setDiagramCode] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
 
+  const [serviceInterfaces, setServiceInterfaces] = useState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+
+  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const onConnect = useCallback((params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges])
+
+  useEffect(() => {
+    if (serviceInterfaces.length > 0) {
+      const { nodes: newNodes, edges: newEdges } = createNodes(serviceInterfaces)
+      const { nodes:  layoutedNodes, edges: layoutedEdges } = getLayoutedElements(newNodes, newEdges)
+      setNodes([...layoutedNodes])
+      setEdges([...layoutedEdges])
+    }
+  }, [serviceInterfaces, setNodes, setEdges])
+
   useEffect(() => {
       // 假设您在这里获取 functionDesign 的输出
       const { content } = block; // 根据实际情况调整
 
       console.log(block)
-      if(content && content.indexOf('sequencediagram')>-1){
+      if(content ){
+        if(content.indexOf('sequencediagram')>-1){
         try{
           let relsequenceDiagram=JSON.parse(content)
           console.log(relsequenceDiagram)
@@ -185,8 +216,13 @@ export function Block({
           }
         }catch(e){
           console.log(e)
+        }}
+        else if(content.indexOf('serviceInterface')>-1){
+          let service=JSON.parse(content)
+          if(service &&service.serviceInterface){
+            setServiceInterfaces(service.serviceInterface)
+          }
         }
-        
       }
       
       // if (sequenceDiagram && sequenceDiagram.includes('sequenceDescription')) {
@@ -334,6 +370,14 @@ export function Block({
 
   const [_, copyToClipboard] = useCopyToClipboard();
 
+  const handleExport = () => {
+    if (serviceInterfaces.length > 0) {
+      const idl = generateIDL(serviceInterfaces);
+      downloadIDL(idl);
+    } else {
+      //setError('No service interfaces to export');
+    }
+  };
   return (
     <motion.div
       className="flex flex-row h-dvh w-dvw fixed top-0 left-0 z-50 bg-muted"
@@ -541,6 +585,22 @@ export function Block({
               </TooltipTrigger>
               <TooltipContent>Copy to clipboard</TooltipContent>
             </Tooltip>
+            {nodes.length>0 &&<Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="p-2 h-fit dark:hover:bg-zinc-700"
+                  onClick={() => {
+                    handleExport();
+                    toast.success('download success!');
+                  }}
+                  disabled={block.status === 'streaming'}
+                >
+                  <Download size={18} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Export IDL</TooltipContent>
+            </Tooltip>}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -615,7 +675,28 @@ export function Block({
               )}
             </div>)
           }
-          {!diagramCode &&<div className="flex flex-row max-w-[600px] mx-auto">
+        {nodes.length > 0 && (
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            connectionMode={ConnectionMode.Loose}
+            fitView
+            nodeTypes={{
+              serviceInterface: ServiceInterfaceNode,
+              method: MethodNode,
+              field: FieldNode,
+              event: EventNode
+            }}
+          >
+            <Background />
+            <Controls />
+            <MiniMap />
+          </ReactFlow>
+        )}
+          {!diagramCode&&nodes.length<1 &&<div className="flex flex-row max-w-[600px] mx-auto">
          
             {isDocumentsFetching && !block.content&&!diagramCode ? (
               <DocumentSkeleton />

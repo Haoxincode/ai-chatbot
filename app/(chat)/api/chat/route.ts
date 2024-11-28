@@ -331,23 +331,26 @@ export async function POST(request: Request) {
             content: '',
           });
             const data = await runDifyWorkflow(useCase,apiKey);
-            if(data.data.outputs.serviceinterface){
-              const result=JSON.parse(data.data.outputs.serviceinterface)
-            
-              streamingData.append({ type: 'diagram', content: JSON.stringify({serviceInterface:result.serviceInterfaces}) }); 
-              streamingData.append({ type: 'finish', content: '' }); // 结束流
-              if (session.user?.id) {
-                await saveDocument({
-                  id,
-                  title:useCase,
-                  content: JSON.stringify({serviceInterface:result.serviceInterfaces}),
-                  userId: session.user.id,
-                });
-              }
+            console.log(data)
+            let result={serviceInterface:""}
+            if(data.data.outputs && data.data.outputs.serviceinterface){
+              const ssresult=JSON.parse(data.data.outputs.serviceinterface)
+              result.serviceInterface=ssresult.serviceInterfaces
+              
             }
             
             
-  
+            streamingData.append({ type: 'res', content: data.data.outputs }); 
+            streamingData.append({ type: 'diagram', content: JSON.stringify(result) }); 
+            streamingData.append({ type: 'finish', content: '' }); // 结束流
+            if (session.user?.id) {
+              await saveDocument({
+                id,
+                title:useCase,
+                content: JSON.stringify(result),
+                userId: session.user.id,
+              });
+            }
             return {
               id,
               title:useCase,

@@ -87,7 +87,7 @@ export function DocumentToolResult({
 }
 
 interface DocumentToolCallProps {
-  type: 'create' | 'update' | 'request-suggestions'|'functionDesign';
+  type: 'create' | 'update' | 'request-suggestions'|'functionDesign'|'updateDesign'|"diagram";
   args: { title: string };
   setBlock: (value: SetStateAction<UIBlock>) => void;
 }

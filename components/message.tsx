@@ -149,6 +149,18 @@ export const PreviewMessage = ({
                         args={args}
                         setBlock={setBlock}
                       />
+                    ): toolName === 'updateDesign' ? (
+                      <DocumentToolCall
+                        type="updateDesign"
+                        args={args}
+                        setBlock={setBlock}
+                      />
+                    ): toolName === 'diagram' ? (
+                      <DocumentToolCall
+                        type="diagram"
+                        args={args}
+                        setBlock={setBlock}
+                      />
                     ) : null}
                   </div>
                 );

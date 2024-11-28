@@ -281,7 +281,7 @@ export async function POST(request: Request) {
               await saveDocument({
                 id,
                 title: document.title,
-                content: draftText,
+                content: JSON.stringify(result),
                 userId: session.user.id,
               });
             }
@@ -335,17 +335,18 @@ export async function POST(request: Request) {
               const result=JSON.parse(data.data.outputs.serviceinterface)
             
               streamingData.append({ type: 'diagram', content: JSON.stringify({serviceInterface:result.serviceInterfaces}) }); 
+              streamingData.append({ type: 'finish', content: '' }); // 结束流
+              if (session.user?.id) {
+                await saveDocument({
+                  id,
+                  title:useCase,
+                  content: JSON.stringify({serviceInterface:result.serviceInterfaces}),
+                  userId: session.user.id,
+                });
+              }
             }
             
-            streamingData.append({ type: 'finish', content: '' }); // 结束流
-            if (session.user?.id) {
-              await saveDocument({
-                id,
-                title:useCase,
-                content: JSON.stringify(result),
-                userId: session.user.id,
-              });
-            }
+            
   
             return {
               id,

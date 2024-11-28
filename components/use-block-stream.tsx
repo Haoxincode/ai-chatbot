@@ -78,7 +78,7 @@ export function useBlockStream({
         case "diagram":
           return {
             ...draftBlock,
-            diagram:draftBlock.content,
+            content:draftBlock.content,
             isVisible:
               draftBlock.status === 'streaming' &&
               draftBlock.content.length > 200 &&draftBlock.content.length < 250

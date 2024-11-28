@@ -94,7 +94,14 @@ export const PreviewMessage = ({
                             block={block}
                             setBlock={setBlock} 
                         />
-                      ): toolName === 'diagram' ?(
+                      ): toolName === 'updateDesign' ?(
+                        <DocumentToolResult 
+                          type="updateDesign"
+                          result={result}
+                          block={block}
+                          setBlock={setBlock} 
+                      />
+                    ): toolName === 'diagram' ?(
                         <DocumentToolResult 
                           type="diagram"
                           result={result}

@@ -4,7 +4,7 @@ import type { UIBlock } from './block';
 import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from './icons';
 import {Paintbrush} from 'lucide-react'
 const getActionText = (
-  type: 'create' | 'update' | 'request-suggestions'|"functionDesign"|"diagram",
+  type: 'create' | 'update' | 'request-suggestions'|"functionDesign"|"updateDesign"|"diagram",
   tense: 'present' | 'past',
 ) => {
   switch (type) {
@@ -18,6 +18,8 @@ const getActionText = (
         : 'Added suggestions to';
     case "functionDesign":
       return tense === 'present'?"Designing":"Designed"
+    case "updateDesign":
+      return tense === 'present'?"Updating":"Updated"
     case "diagram":
       return tense === 'present'?"Drawing":"Drawn"
     default:
@@ -26,7 +28,7 @@ const getActionText = (
 };
 
 interface DocumentToolResultProps {
-  type: 'create' | 'update' | 'request-suggestions'|'functionDesign'|"diagram";
+  type: 'create' | 'update' | 'request-suggestions'|'functionDesign'|"updateDesign"|"diagram";
   result: { id: string; title: string };
   block: UIBlock;
   setBlock: (value: SetStateAction<UIBlock>) => void;
@@ -70,6 +72,8 @@ export function DocumentToolResult({
         ) : type === 'request-suggestions' ? (
           <MessageIcon />
         ) :type === 'functionDesign' ? (
+          <Paintbrush size={16}  />
+        ):type === 'updateDesign' ? (
           <Paintbrush size={16}  />
         ) :type === 'diagram' ? (
           <Paintbrush size={16}  />
@@ -124,7 +128,9 @@ export function DocumentToolCall({
             <MessageIcon />
           ) :type === 'functionDesign' ? (
             <Paintbrush size={16} />
-          )  :type === 'diagram' ? (
+          ) :type === 'updateDesign' ? (
+            <Paintbrush size={16}  />
+          ) :type === 'diagram' ? (
             <Paintbrush size={16}  />
           ): null}
         </div>

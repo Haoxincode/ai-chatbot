@@ -331,9 +331,12 @@ export async function POST(request: Request) {
             content: '',
           });
             const data = await runDifyWorkflow(useCase,apiKey);
-            const result=JSON.parse(data.data.outputs.serviceinterface).serviceInterfaces
+            if(data.data.outputs.serviceinterface){
+              const result=JSON.parse(data.data.outputs.serviceinterface)
             
-            streamingData.append({ type: 'diagram', content: JSON.stringify({serviceInterface:result}) }); 
+              streamingData.append({ type: 'diagram', content: JSON.stringify({serviceInterface:result.serviceInterfaces}) }); 
+            }
+            
             streamingData.append({ type: 'finish', content: '' }); // 结束流
             if (session.user?.id) {
               await saveDocument({

@@ -666,9 +666,10 @@ export function Block({
                 <ZenUMLRenderer code={diagramCode} height="100%" width="100%" />
               )}{/* 其他内容 */}
               {description && (
-                <div className="mt-4 bg-zinc-950 text-zinc-50 rounded-lg p-6">
-                  <h3 className="text-md font-semibold mb-2">Sequence Description</h3>
-                  <div className="prose prose-invert max-w-none">
+                <div className="mt-4 bg-white text-zinc-950 rounded-lg p-6 border border-zinc-200">
+                  <h1 className="text-lg font-semibold mb-2">Sequence Description</h1>
+                  <div className="w-full h-px bg-zinc-200 mb-4"></div>
+                  <div className="prose max-w-none">
                     <ReactMarkdown>{description}</ReactMarkdown>
                   </div>
                 </div>

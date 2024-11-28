@@ -29,7 +29,7 @@ import {
 
 import { generateTitleFromUserMessage } from '../../actions';
 
-export const maxDuration = 60;
+//export const maxDuration = 60;
 
 type AllowedTools =
   | 'createDocument'

@@ -94,7 +94,14 @@ export const PreviewMessage = ({
                             block={block}
                             setBlock={setBlock} 
                         />
-                      )
+                      ): toolName === 'diagram' ?(
+                        <DocumentToolResult 
+                          type="diagram"
+                          result={result}
+                          block={block}
+                          setBlock={setBlock} 
+                      />
+                    )
                       :
                       (
                         <pre>{JSON.stringify(result, null, 2)}</pre>

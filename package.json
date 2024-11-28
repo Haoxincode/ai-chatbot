@@ -78,6 +78,7 @@
     "@biomejs/biome": "1.9.4",
     "@tailwindcss/typography": "^0.5.15",
     "@types/d3-scale": "^4.0.8",
+    "@types/dagre": "^0.7.52",
     "@types/node": "^22.8.6",
     "@types/pdf-parse": "^1.1.4",
     "@types/react": "^18",

@@ -28,9 +28,9 @@ export const generateIDL = (serviceInterfaces:any) => {
 
     // Add attributes (fields)
     if (service.fields && service.fields.length > 0) {
-      service.fields.forEach(field => {
+      service.fields.forEach((field:any) => {
         idl += '    attribute {\n';
-        const typeMap = {
+        const typeMap:any = {
           "uint16": "UInt16",
           "uint8": "UInt8",
           "uint32": "UInt32",
@@ -44,7 +44,7 @@ export const generateIDL = (serviceInterfaces:any) => {
           "float": "Float",
           "double": "Double",
           "string": "String",
-          "object": (name) => `${name}Struct`
+          "object": (name:any) => `${name}Struct`
         };
         const correctedType = typeMap[field.type] 
           ? (typeof typeMap[field.type] === 'function' ? typeMap[field.type](field.name) : typeMap[field.type])
@@ -63,8 +63,8 @@ export const generateIDL = (serviceInterfaces:any) => {
       idl += ' {\n';
       if (method.input && method.input.length > 0) {
         idl += '        in {\n';
-        method.input.forEach(input => {
-          const typeMap = {
+        method.input.forEach((input:any) => {
+          const typeMap:any = {
             "uint16": "UInt16",
             "uint8": "UInt8",
             "uint32": "UInt32",
@@ -78,7 +78,7 @@ export const generateIDL = (serviceInterfaces:any) => {
             "float": "Float",
             "double": "Double",
             "string": "String",
-            "object": (name) => `${name}Struct`
+            "object": (name:any) => `${name}Struct`
           };
           const correctedType = typeMap[input.type] 
             ? (typeof typeMap[input.type] === 'function' ? typeMap[input.type](input.name) : typeMap[input.type])
@@ -89,8 +89,8 @@ export const generateIDL = (serviceInterfaces:any) => {
       }
       if (method.output && method.output.length > 0) {
         idl += '        out {\n';
-        method.output.forEach(output => {
-          const typeMap = {
+        method.output.forEach((output:any) => {
+          const typeMap:any = {
             "uint16": "UInt16",
             "uint8": "UInt8",
             "uint32": "UInt32",
@@ -104,7 +104,7 @@ export const generateIDL = (serviceInterfaces:any) => {
             "float": "Float",
             "double": "Double",
             "string": "String",
-            "object": (name) => `${name}Struct`
+            "object": (name:any) => `${name}Struct`
           };
           const correctedType = typeMap[output.type] 
             ? (typeof typeMap[output.type] === 'function' ? typeMap[output.type](output.name) : typeMap[output.type])
@@ -117,11 +117,11 @@ export const generateIDL = (serviceInterfaces:any) => {
     });
 
     // Add broadcasts (events)
-    service.events.forEach(event => {
+    service.events.forEach((event:any) => {
       idl += `    broadcast ${event.name} {\n`;
       idl += '        out {\n';
-      event.data.forEach(data => {
-        const typeMap = {
+      event.data.forEach((data:any) => {
+        const typeMap:any = {
           "uint16": "UInt16",
           "uint8": "UInt8",
           "uint32": "UInt32",
@@ -135,7 +135,7 @@ export const generateIDL = (serviceInterfaces:any) => {
           "float": "Float",
           "double": "Double",
           "string": "String",
-          "object": (name) => `${name}Struct`
+          "object": (name:any) => `${name}Struct`
         };
         const correctedType = typeMap[data.type] 
           ? (typeof typeMap[data.type] === 'function' ? typeMap[data.type](data.name) : typeMap[data.type])
@@ -156,7 +156,7 @@ export const generateIDL = (serviceInterfaces:any) => {
     idl += '    }\n\n';
 
     // Add attribute deployments
-    service.fields.forEach((field, fieldIndex) => {
+    service.fields.forEach((field:any, fieldIndex:any) => {
       idl += `    attribute ${field.name} {\n`;
       idl += `        SomeIpGetterID = ${110 + fieldIndex * 10}\n`;
       idl += `        SomeIpSetterID = ${111 + fieldIndex * 10}\n`;
@@ -167,7 +167,7 @@ export const generateIDL = (serviceInterfaces:any) => {
     });
 
     // Add method deployments
-    service.methods.forEach((method, methodIndex) => {
+    service.methods.forEach((method:any, methodIndex:any) => {
       idl += `    method ${method.name} {\n`;
       idl += `        SomeIpMethodID = ${32780 + methodIndex}\n`;
       idl += '        SomeIpReliable = false\n';
@@ -175,7 +175,7 @@ export const generateIDL = (serviceInterfaces:any) => {
     });
 
     // Add broadcast deployments
-    service.events.forEach((event, eventIndex) => {
+    service.events.forEach((event:any, eventIndex:any) => {
       idl += `    broadcast ${event.name} {\n`;
       idl += `        SomeIpEventID = ${32769 + eventIndex}\n`;
       idl += `        SomeIpEventGroups = { ${eventIndex + 1} }\n`;
@@ -203,7 +203,7 @@ export const generateIDL = (serviceInterfaces:any) => {
   return idl;
 };
 
-export const downloadIDL = (idl) => {
+export const downloadIDL = (idl:any) => {
     const blob = new Blob([idl], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -215,7 +215,7 @@ export const downloadIDL = (idl) => {
     URL.revokeObjectURL(url);
   };
   
-  export const NodeLabel = ({ type }) => (
+  export const NodeLabel = ({ type }:any) => (
     <div className="absolute top-0 left-0 px-2 py-1 text-xs font-semibold text-white rounded-tl-md rounded-br-md" style={{
       backgroundColor: type === 'serviceInterface' ? '#3b82f6' :
                        type === 'method' ? '#10b981' :
@@ -229,7 +229,7 @@ export const downloadIDL = (idl) => {
     </div>
   )
   
-  export const ServiceInterfaceNode = ({ data }) => (
+  export const ServiceInterfaceNode = ({ data }:any) => (
     <div className="relative px-4 py-2 shadow-md rounded-md bg-blue-50 border-2 border-blue-200 w-80">
       <NodeLabel type="serviceInterface" />
       <div className="font-bold text-lg border-b border-blue-200 pb-2 mb-2 mt-6">{data.name}</div>
@@ -239,7 +239,7 @@ export const downloadIDL = (idl) => {
     </div>
   )
   
-  export const MethodNode = ({ data }) => (
+  export const MethodNode = ({ data }:any) => (
     <div className="relative px-4 py-2 shadow-md rounded-md bg-green-50 border-2 border-green-200 w-72">
       <NodeLabel type="method" />
       <div className="font-bold border-b border-green-200 pb-2 mb-2 mt-6">{data.name}</div>
@@ -248,7 +248,7 @@ export const downloadIDL = (idl) => {
       <div className="text-sm">
         <div className="font-medium mb-1">Input:</div>
         <ul className="list-disc list-inside mb-2">
-          {data.input && data.input.map((input, index) => (
+          {data.input && data.input.map((input:any, index:number) => (
             <li key={index}>{input.name}: {input.type}</li>
           ))}
         </ul>
@@ -256,7 +256,7 @@ export const downloadIDL = (idl) => {
           <>
             <div className="font-medium mb-1">Output:</div>
             <ul className="list-disc list-inside">
-              {data.output.map((output, index) => (
+              {data.output.map((output:any, index:number) => (
                 <li key={index}>{output.name}: {output.type}</li>
               ))}
             </ul>
@@ -267,7 +267,7 @@ export const downloadIDL = (idl) => {
     </div>
   )
   
-  export const FieldNode = ({ data }) => (
+  export const FieldNode = ({ data }:any) => (
     <div className="relative px-4 py-2 shadow-md rounded-md bg-yellow-50 border-2 border-yellow-200 w-64">
       <NodeLabel type="field" />
       <div className="font-bold border-b border-yellow-200 pb-2 mb-2 mt-6">{data.name}</div>
@@ -280,7 +280,7 @@ export const downloadIDL = (idl) => {
     </div>
   )
   
-  export const EventNode = ({ data }) => (
+  export const EventNode = ({ data }:any) => (
     <div className="relative px-4 py-2 shadow-md rounded-md bg-red-50 border-2 border-red-200 w-64">
       <NodeLabel type="event" />
       <div className="font-bold border-b border-red-200 pb-2 mb-2 mt-6">{data.name}</div>
@@ -288,7 +288,7 @@ export const downloadIDL = (idl) => {
       <div className="text-sm">
         <div className="font-medium mb-1">Data:</div>
         <ul className="list-disc list-inside">
-          {data.data && data.data.map((item, index) => (
+          {data.data && data.data.map((item:any, index:number) => (
             <li key={index}>{item.name}: {item.type}</li>
           ))}
         </ul>

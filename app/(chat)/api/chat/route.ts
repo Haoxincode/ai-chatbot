@@ -301,7 +301,7 @@ export async function POST(request: Request) {
         }
       },
       generateServiceInterfaces:{
-        description:"creat a diagram for a use case",
+        description:"creat a ServiceInterfaces for a use case",
         parameters: z.object({
           useCase: z.string(),
         }),
@@ -354,7 +354,7 @@ export async function POST(request: Request) {
             return {
               id,
               title:useCase,
-              content: 'A Diagram was created and is now visible to the user.',
+              content: 'A ServiceInterfaces was created and is now visible to the user.',
             };
           }catch(e:any){
             console.error('Error running Dify workflow:', e);
@@ -367,10 +367,10 @@ export async function POST(request: Request) {
 
       },
       updateServiceInterfaces:{
-        description: 'Update a generateFunctionDesign with the given usecase',
+        description: 'Update a ServiceInterfaces with the given usecase',
         parameters: z.object({
-          id: z.string().describe('The ID of the generateFunctionDesign document to update'),
-          useCase: z.string().describe('The use case for the generateFunctionDesign'),
+          id: z.string().describe('The ID of the diagram document to update'),
+          useCase: z.string().describe('The use case for the diagram'),
         }),
         execute: async ({ id, useCase }) => {
           const document = await getDocumentById({ id });
@@ -414,7 +414,7 @@ export async function POST(request: Request) {
           return {
             id,
             title:useCase,
-            content: 'A Diagram was updated and is now visible to the user.',
+            content: 'A ServiceInterfaces was updated and is now visible to the user.',
           };
         }catch(e:any){
           console.error('Error running Dify workflow:', e);

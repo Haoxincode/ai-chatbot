@@ -87,23 +87,31 @@ export const PreviewMessage = ({
                           block={block}
                           setBlock={setBlock}
                         />
-                      ) : toolName === 'functionDesign' ?(
+                      ) : toolName === 'generateFunctionDesign' ?(
                           <DocumentToolResult 
-                            type="functionDesign"
+                            type="generateFunctionDesign"
                             result={result}
                             block={block}
                             setBlock={setBlock} 
                         />
-                      ): toolName === 'updateDesign' ?(
+                      ): toolName === 'updateFunctionDesign' ?(
                         <DocumentToolResult 
-                          type="updateDesign"
+                          type="updateFunctionDesign"
                           result={result}
                           block={block}
                           setBlock={setBlock} 
                       />
-                    ): toolName === 'diagram' ?(
+                    ): toolName === 'generateServiceInterfaces' ?(
                         <DocumentToolResult 
-                          type="diagram"
+                          type="generateServiceInterfaces"
+                          result={result}
+                          block={block}
+                          setBlock={setBlock} 
+                      />
+                    )
+                      : toolName === 'updateServiceInterfaces' ?(
+                        <DocumentToolResult 
+                          type="update"
                           result={result}
                           block={block}
                           setBlock={setBlock} 
@@ -143,21 +151,27 @@ export const PreviewMessage = ({
                         args={args}
                         setBlock={setBlock}
                       />
-                    ) : toolName === 'functionDesign' ? (
+                    ) : toolName === 'generateFunctionDesign' ? (
                       <DocumentToolCall
-                        type="functionDesign"
+                        type="generateFunctionDesign"
                         args={args}
                         setBlock={setBlock}
                       />
-                    ): toolName === 'updateDesign' ? (
+                    ): toolName === 'updateFunctionDesign' ? (
                       <DocumentToolCall
-                        type="updateDesign"
+                        type="updateFunctionDesign"
                         args={args}
                         setBlock={setBlock}
                       />
-                    ): toolName === 'diagram' ? (
+                    ): toolName === 'generateServiceInterfaces' ? (
                       <DocumentToolCall
-                        type="diagram"
+                        type="generateServiceInterfaces"
+                        args={args}
+                        setBlock={setBlock}
+                      />
+                    ): toolName === 'updateServiceInterfaces' ? (
+                      <DocumentToolCall
+                        type="update"
                         args={args}
                         setBlock={setBlock}
                       />

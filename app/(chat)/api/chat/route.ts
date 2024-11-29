@@ -35,15 +35,15 @@ type AllowedTools =
   | 'createDocument'
   | 'updateDocument'
   | 'requestSuggestions'
-  | 'functionDesign'|"diagram"|
-  "updateDesign"
+  | 'generateFunctionDesign'|"generateServiceInterfaces"|
+  "updateFunctionDesign"|"updateServiceInterfaces"
   | 'getWeather';
 
 const blocksTools: AllowedTools[] = [
   'createDocument',
   'updateDocument',
-  "updateDesign",
-  'requestSuggestions','functionDesign',"diagram"
+  "updateFunctionDesign",
+  'requestSuggestions','generateFunctionDesign',"generateServiceInterfaces","updateServiceInterfaces"
 ];
 
 const weatherTools: AllowedTools[] = ['getWeather'];
@@ -136,7 +136,7 @@ export async function POST(request: Request) {
           return weatherData;
         },
       },
-      functionDesign:{
+      generateFunctionDesign:{
         description: 'Run a Dify workflow and parse the result',
         parameters: z.object({
           useCase: z.string().describe('The use case for the workflow'),
@@ -218,7 +218,7 @@ export async function POST(request: Request) {
             return {
               id,
               title:useCase,
-              content: 'A FunctionDesign was created and is now visible to the user.',
+              content: 'A generateFunctionDesign was created and is now visible to the user.',
             };
           } catch (error:any) {
             console.error('Error running Dify workflow:', error);
@@ -229,8 +229,8 @@ export async function POST(request: Request) {
           }
         },
       },
-      updateDesign: {
-        description: 'Update a functionDesign with the given usecase',
+      updateFunctionDesign: {
+        description: 'Update a generateFunctionDesign with the given usecase',
         parameters: z.object({
           id: z.string().describe('The ID of the document to update'),
           useCase: z.string().describe('The use case for the workflow'),
@@ -289,7 +289,7 @@ export async function POST(request: Request) {
             return {
               id,
               title: document.title,
-              content: 'The functionDesign has been updated successfully.',
+              content: 'The generateFunctionDesign has been updated successfully.',
             };
           } catch (error:any) {
             console.error('Error running Dify workflow:', error);
@@ -300,14 +300,14 @@ export async function POST(request: Request) {
           }
         }
       },
-      diagram:{
+      generateServiceInterfaces:{
         description:"creat a diagram for a use case",
         parameters: z.object({
           useCase: z.string(),
         }),
         execute: async ({ useCase }) => {
           try {
-            const apiKey = process.env.DIFY_API_DIAGRAM_KEY; // 确保在环境变量中设置了DIFY_API_KEY
+            const apiKey = process.env.DIFY_API_DIAGRAM_KEY; // DIFY_API_DIAGRAM_KEY
           if (!apiKey) {
             throw new Error('DIFY_API_KEY is not set');
           }
@@ -364,6 +364,66 @@ export async function POST(request: Request) {
             };
           }
         }
+
+      },
+      updateServiceInterfaces:{
+        description: 'Update a generateFunctionDesign with the given usecase',
+        parameters: z.object({
+          id: z.string().describe('The ID of the generateFunctionDesign document to update'),
+          useCase: z.string().describe('The use case for the generateFunctionDesign'),
+        }),
+        execute: async ({ id, useCase }) => {
+          const document = await getDocumentById({ id });
+
+          if (!document) {
+            return {
+              error: 'Document not found',
+            };
+          }
+          streamingData.append({
+            type: 'clear',
+            content: document.title,
+          });
+          try {
+            const apiKey = process.env.DIFY_API_DIAGRAM_KEY; // DIFY_API_DIAGRAM_KEY
+          if (!apiKey) {
+            throw new Error('DIFY_API_KEY is not set');
+          }
+          
+          const data = await runDifyWorkflow(useCase,apiKey);
+          console.log(data)
+          let result={serviceInterface:""}
+          if(data.data.outputs && data.data.outputs.serviceinterface){
+            const ssresult=JSON.parse(data.data.outputs.serviceinterface)
+            result.serviceInterface=ssresult.serviceInterfaces
+            
+          }
+          
+          
+          streamingData.append({ type: 'res', content: data.data.outputs }); 
+          streamingData.append({ type: 'diagram', content: JSON.stringify(result) }); 
+          streamingData.append({ type: 'finish', content: '' }); // 结束流
+          if (session.user?.id) {
+            await saveDocument({
+              id,
+              title:useCase,
+              content: JSON.stringify(result),
+              userId: session.user.id,
+            });
+          }
+          return {
+            id,
+            title:useCase,
+            content: 'A Diagram was updated and is now visible to the user.',
+          };
+        }catch(e:any){
+          console.error('Error running Dify workflow:', e);
+          return {
+            error: 'Failed to run Dify workflow',
+            details: e.message,
+          };
+        }
+      }
 
       },
       createDocument: {

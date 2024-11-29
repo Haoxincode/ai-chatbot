@@ -199,7 +199,7 @@ export function Block({
   }, [serviceInterfaces, setNodes, setEdges])
 
   useEffect(() => {
-      // 假设您在这里获取 functionDesign 的输出
+      // 假设您在这里获取 generateFunctionDesign 的输出
       const { content } = block; // 根据实际情况调整
 
       console.log(block)

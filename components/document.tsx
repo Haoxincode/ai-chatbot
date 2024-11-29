@@ -4,7 +4,7 @@ import type { UIBlock } from './block';
 import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from './icons';
 import {Paintbrush} from 'lucide-react'
 const getActionText = (
-  type: 'create' | 'update' | 'request-suggestions'|"functionDesign"|"updateDesign"|"diagram",
+  type: 'create' | 'update' | 'request-suggestions'|"generateFunctionDesign"|"updateFunctionDesign"|"generateServiceInterfaces",
   tense: 'present' | 'past',
 ) => {
   switch (type) {
@@ -16,11 +16,11 @@ const getActionText = (
       return tense === 'present'
         ? 'Adding suggestions'
         : 'Added suggestions to';
-    case "functionDesign":
+    case "generateFunctionDesign":
       return tense === 'present'?"Designing":"Designed"
-    case "updateDesign":
+    case "updateFunctionDesign":
       return tense === 'present'?"Updating":"Updated"
-    case "diagram":
+    case "generateServiceInterfaces":
       return tense === 'present'?"Drawing":"Drawn"
     default:
       return null;
@@ -28,7 +28,7 @@ const getActionText = (
 };
 
 interface DocumentToolResultProps {
-  type: 'create' | 'update' | 'request-suggestions'|'functionDesign'|"updateDesign"|"diagram";
+  type: 'create' | 'update' | 'request-suggestions'|'generateFunctionDesign'|"updateFunctionDesign"|"generateServiceInterfaces";
   result: { id: string; title: string };
   block: UIBlock;
   setBlock: (value: SetStateAction<UIBlock>) => void;
@@ -71,11 +71,11 @@ export function DocumentToolResult({
           <PencilEditIcon />
         ) : type === 'request-suggestions' ? (
           <MessageIcon />
-        ) :type === 'functionDesign' ? (
+        ) :type === 'generateFunctionDesign' ? (
           <Paintbrush size={16}  />
-        ):type === 'updateDesign' ? (
+        ):type === 'updateFunctionDesign' ? (
           <Paintbrush size={16}  />
-        ) :type === 'diagram' ? (
+        ) :type === 'generateServiceInterfaces' ? (
           <Paintbrush size={16}  />
         ) : null}
       </div>
@@ -87,7 +87,7 @@ export function DocumentToolResult({
 }
 
 interface DocumentToolCallProps {
-  type: 'create' | 'update' | 'request-suggestions'|'functionDesign'|'updateDesign'|"diagram";
+  type: 'create' | 'update' | 'request-suggestions'|'generateFunctionDesign'|'updateFunctionDesign'|"generateServiceInterfaces";
   args: { title: string };
   setBlock: (value: SetStateAction<UIBlock>) => void;
 }
@@ -126,11 +126,11 @@ export function DocumentToolCall({
             <PencilEditIcon />
           ) : type === 'request-suggestions' ? (
             <MessageIcon />
-          ) :type === 'functionDesign' ? (
+          ) :type === 'generateFunctionDesign' ? (
             <Paintbrush size={16} />
-          ) :type === 'updateDesign' ? (
+          ) :type === 'updateFunctionDesign' ? (
             <Paintbrush size={16}  />
-          ) :type === 'diagram' ? (
+          ) :type === 'generateServiceInterfaces' ? (
             <Paintbrush size={16}  />
           ): null}
         </div>

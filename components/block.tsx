@@ -204,6 +204,30 @@ export function Block({
     }
   }, [serviceInterfaces, setNodes, setEdges])
 
+  const parseDiagram=(content:any)=>{
+    try{
+      let relsequenceDiagram=JSON.parse(content)
+      console.log(relsequenceDiagram)
+      if(relsequenceDiagram &&relsequenceDiagram.sequencediagram){
+        setDiagramCode(relsequenceDiagram.sequencediagram)
+      }
+      if(relsequenceDiagram &&relsequenceDiagram.markdownContent){
+        setDescription(relsequenceDiagram.markdownContent)
+      }
+    }catch(e){
+      console.log(e,'parseDiagramError')
+    }
+  }
+  const parseInterface=(content:any)=>{
+    try{
+      let service=JSON.parse(content)
+      if(service &&service.serviceInterface){
+        setServiceInterfaces(service.serviceInterface)
+      }
+    }catch(e){
+      console.log(e)
+    }
+  }
   useEffect(() => {
       // 假设您在这里获取 generateFunctionDesign 的输出
       const { content } = block; // 根据实际情况调整
@@ -211,27 +235,12 @@ export function Block({
       console.log(block)
       if(content ){
         if(content.indexOf('sequencediagram')>-1){
-        try{
-          let relsequenceDiagram=JSON.parse(content)
-          console.log(relsequenceDiagram)
-          if(relsequenceDiagram &&relsequenceDiagram.sequencediagram){
-            setDiagramCode(relsequenceDiagram.sequencediagram)
-          }
-          if(relsequenceDiagram &&relsequenceDiagram.markdownContent){
-            setDescription(relsequenceDiagram.markdownContent)
-          }
-        }catch(e){
-          console.log(e)
-        }}
-        else if(content.indexOf('serviceInterface')>-1){
-          try{
-            let service=JSON.parse(content)
-            if(service &&service.serviceInterface){
-              setServiceInterfaces(service.serviceInterface)
-            }
-          }catch(e){
-            console.log(e)
-          }
+        
+          parseDiagram(content)
+        
+        }
+        if(content.indexOf('serviceInterface')>-1){
+            parseInterface(content)
         }
       }
       
@@ -351,14 +360,25 @@ export function Block({
       setMode((mode) => (mode === 'edit' ? 'diff' : 'edit'));
     }
 
+    let curIndex=currentVersionIndex
     if (type === 'prev') {
       if (currentVersionIndex > 0) {
+        curIndex=currentVersionIndex-1
         setCurrentVersionIndex((index) => index - 1);
       }
     } else if (type === 'next') {
       if (currentVersionIndex < documents.length - 1) {
+        curIndex=currentVersionIndex+1
         setCurrentVersionIndex((index) => index + 1);
       }
+    }
+    console.log(curIndex)
+    setCurrentVersionIndex(curIndex)
+    if(diagramCode && documents[curIndex].content){
+      parseDiagram(documents[curIndex].content)
+    }
+    if(serviceInterfaces && documents[curIndex].content){
+      parseInterface(documents[curIndex].content)
     }
   };
 

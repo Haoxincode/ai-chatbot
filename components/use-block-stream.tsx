@@ -68,22 +68,14 @@ export function useBlockStream({
           return {
             ...draftBlock,
             sequenceDiagram:draftBlock.content,
-            isVisible:
-              draftBlock.status === 'streaming' &&
-              draftBlock.content.length > 200 &&draftBlock.content.length < 250
-              ? true
-              : draftBlock.isVisible,
+            isVisible:true,
             status: 'streaming',
           };
         case "diagram":
           return {
             ...draftBlock,
             content:draftBlock.content,
-            isVisible:
-              draftBlock.status === 'streaming' &&
-              draftBlock.content.length > 200 &&draftBlock.content.length < 250
-              ? true
-              : draftBlock.isVisible,
+            isVisible:true,
             status: 'streaming',
           }
         case 'suggestion':

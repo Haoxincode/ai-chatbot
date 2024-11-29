@@ -229,7 +229,7 @@ export const downloadIDL = (idl:any) => {
     </div>
   )
   
-  export const ServiceInterfaceNode = ({ data }:any) => (
+  export const ServiceInterfaceNode = ({ data }:any) => {return(
     <div className="relative px-4 py-2 shadow-md rounded-md bg-blue-50 border-2 border-blue-200 w-80">
       <NodeLabel type="serviceInterface" />
       <div className="font-bold text-lg border-b border-blue-200 pb-2 mb-2 mt-6">{data.name}</div>
@@ -237,9 +237,9 @@ export const downloadIDL = (idl:any) => {
       <div className="text-sm mb-2">{data.description}</div>
       <Handle type="source" position={Position.Bottom} className="w-16 !bg-blue-500" />
     </div>
-  )
+  )}
   
-  export const MethodNode = ({ data }:any) => (
+  export const MethodNode = ({ data }:any) =>{ return(
     <div className="relative px-4 py-2 shadow-md rounded-md bg-green-50 border-2 border-green-200 w-72">
       <NodeLabel type="method" />
       <div className="font-bold border-b border-green-200 pb-2 mb-2 mt-6">{data.name}</div>
@@ -265,9 +265,9 @@ export const downloadIDL = (idl:any) => {
       </div>
       <Handle type="target" position={Position.Top} className="w-16 !bg-green-500" />
     </div>
-  )
+  )}
   
-  export const FieldNode = ({ data }:any) => (
+  export const FieldNode = ({ data }:any) => {return(
     <div className="relative px-4 py-2 shadow-md rounded-md bg-yellow-50 border-2 border-yellow-200 w-64">
       <NodeLabel type="field" />
       <div className="font-bold border-b border-yellow-200 pb-2 mb-2 mt-6">{data.name}</div>
@@ -278,9 +278,9 @@ export const downloadIDL = (idl:any) => {
       </div>
       <Handle type="target" position={Position.Top} className="w-16 !bg-yellow-500" />
     </div>
-  )
+  )}
   
-  export const EventNode = ({ data }:any) => (
+  export const EventNode = ({ data }:any) =>{return (
     <div className="relative px-4 py-2 shadow-md rounded-md bg-red-50 border-2 border-red-200 w-64">
       <NodeLabel type="event" />
       <div className="font-bold border-b border-red-200 pb-2 mb-2 mt-6">{data.name}</div>
@@ -295,7 +295,7 @@ export const downloadIDL = (idl:any) => {
       </div>
       <Handle type="target" position={Position.Top} className="w-16 !bg-red-500" />
     </div>
-  )
+  )}
   
   export const createNodes = (serviceInterfaces:any) => {
     const nodes: Node[] = []

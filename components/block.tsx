@@ -55,6 +55,12 @@ import ReactMarkdown from 'react-markdown'
 import Diagram from '@zenuml/core'
 import { Download } from 'lucide-react';
 
+const nodesType={
+  serviceInterface: ServiceInterfaceNode,
+  method: MethodNode,
+  field: FieldNode,
+  event: EventNode
+}
 interface ZenUMLRendererProps {
     code: string
     height: string
@@ -680,8 +686,8 @@ export function Block({
               )}
             </div>)
           }
-        {nodes.length > 0 && (
-          <ReactFlow
+        {nodes.length > 0 && (<div style={{ height: 800 }}>
+          <ReactFlow 
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
@@ -689,17 +695,12 @@ export function Block({
             onConnect={onConnect}
             connectionMode={ConnectionMode.Loose}
             fitView
-            nodeTypes={{
-              serviceInterface: ServiceInterfaceNode,
-              method: MethodNode,
-              field: FieldNode,
-              event: EventNode
-            }}
+            nodeTypes={nodesType}
           >
             <Background />
             <Controls />
             <MiniMap />
-          </ReactFlow>
+          </ReactFlow></div>
         )}
           {!diagramCode&&nodes.length<1 &&<div className="flex flex-row max-w-[600px] mx-auto">
          

@@ -369,8 +369,8 @@ export async function POST(request: Request) {
       updateServiceInterfaces:{
         description: 'Update a ServiceInterfaces with the given usecase',
         parameters: z.object({
-          id: z.string().describe('The ID of the diagram document to update'),
-          useCase: z.string().describe('The use case for the diagram'),
+          id: z.string().describe('The ID of the ServiceInterfaces document to update'),
+          useCase: z.string().describe('The use case for the ServiceInterfaces'),
         }),
         execute: async ({ id, useCase }) => {
           const document = await getDocumentById({ id });

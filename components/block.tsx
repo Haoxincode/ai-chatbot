@@ -218,10 +218,14 @@ export function Block({
           console.log(e)
         }}
         else if(content.indexOf('serviceInterface')>-1){
-          let service=JSON.parse(content)
-          if(service &&service.serviceInterface){
-            setServiceInterfaces(service.serviceInterface)
-          }
+          try{
+            let service=JSON.parse(content)
+            if(service &&service.serviceInterface){
+              setServiceInterfaces(service.serviceInterface)
+            }
+          }catch(e){
+            console.log(e)
+          }}
         }
       }
       

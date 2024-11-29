@@ -225,7 +225,7 @@ export function Block({
             }
           }catch(e){
             console.log(e)
-          }}
+          }
         }
       }
       

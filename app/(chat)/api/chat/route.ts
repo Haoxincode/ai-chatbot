@@ -137,9 +137,9 @@ export async function POST(request: Request) {
         },
       },
       generateFunctionDesign:{
-        description: 'Run a Dify workflow and parse the result',
+        description: '根据输入用例生成时序图及其相应的描述',
         parameters: z.object({
-          useCase: z.string().describe('The use case for the workflow'),
+          useCase: z.string().describe('User-described use case'),
         }),
         execute: async ({ useCase }) => {
           const apiKey = process.env.DIFY_API_KEY; // 确保在环境变量中设置了DIFY_API_KEY
@@ -221,19 +221,19 @@ export async function POST(request: Request) {
               content: 'A generateFunctionDesign was created and is now visible to the user.',
             };
           } catch (error:any) {
-            console.error('Error running Dify workflow:', error);
+            console.error('Error running workflow:', error);
             return {
-              error: 'Failed to run Dify workflow',
+              error: 'Failed to run workflow',
               details: error.message,
             };
           }
         },
       },
       updateFunctionDesign: {
-        description: 'Update a generateFunctionDesign with the given usecase',
+        description: '基于用例（包含用户反馈和上一版本的时序描述）更新系统或流程的功能设计。它分析现有设计，整合用户反馈，并生成改进的、连贯的功能设计。',
         parameters: z.object({
           id: z.string().describe('The ID of the document to update'),
-          useCase: z.string().describe('The use case for the workflow'),
+          useCase: z.string().describe('用例（包含用户反馈和上一版本的时序描述）'),
         }),
         execute: async ({ id, useCase }) => {
           const document = await getDocumentById({ id });
@@ -292,9 +292,9 @@ export async function POST(request: Request) {
               content: 'The generateFunctionDesign has been updated successfully.',
             };
           } catch (error:any) {
-            console.error('Error running Dify workflow:', error);
+            console.error('Error running workflow:', error);
             return {
-              error: 'Failed to run Dify workflow',
+              error: 'Failed to run workflow',
               details: error.message,
             };
           }
@@ -303,7 +303,7 @@ export async function POST(request: Request) {
       generateServiceInterfaces:{
         description:"creat a ServiceInterfaces for a use case",
         parameters: z.object({
-          useCase: z.string(),
+          useCase: z.string().describe('用例（包含用户反馈和最新版本的时序描述）')
         }),
         execute: async ({ useCase }) => {
           try {
@@ -357,9 +357,9 @@ export async function POST(request: Request) {
               content: 'A ServiceInterfaces was created and is now visible to the user.',
             };
           }catch(e:any){
-            console.error('Error running Dify workflow:', e);
+            console.error('Error running workflow:', e);
             return {
-              error: 'Failed to run Dify workflow',
+              error: 'Failed to run workflow',
               details: e.message,
             };
           }
@@ -417,9 +417,9 @@ export async function POST(request: Request) {
             content: 'A ServiceInterfaces was updated and is now visible to the user.',
           };
         }catch(e:any){
-          console.error('Error running Dify workflow:', e);
+          console.error('Error running workflow:', e);
           return {
-            error: 'Failed to run Dify workflow',
+            error: 'Failed to run workflow',
             details: e.message,
           };
         }

@@ -44,7 +44,7 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         asChild
       >
         <Link
-          href="https://nebulx.tech/"
+          href="https://blog.nebula-tech.site/"
           target="_noblank"
         >
           Contact with Nebula

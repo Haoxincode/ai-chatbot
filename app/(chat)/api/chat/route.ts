@@ -301,7 +301,7 @@ export async function POST(request: Request) {
         }
       },
       generateServiceInterfaces:{
-        description:"creat a ServiceInterfaces for a use case",
+        description:"根据用例生成相关的服务接口",
         parameters: z.object({
           useCase: z.string().describe('用例（包含用户反馈和最新版本的时序描述）')
         }),

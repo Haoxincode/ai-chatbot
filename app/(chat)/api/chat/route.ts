@@ -303,7 +303,7 @@ export async function POST(request: Request) {
       generateServiceInterfaces:{
         description:"根据功能设计生成相关的服务接口",
         parameters: z.object({
-          designId: z.string().describe('The ID of the last design document')
+          designId: z.string().describe('The ID of the last design document,如果没有id,提示用户先生成功能设计')
         }),
         execute: async ({ designId }) => {
           try {
@@ -374,9 +374,9 @@ export async function POST(request: Request) {
 
       },
       updateServiceInterfaces:{
-        description: '根据用户反馈的修改意见，更新上一版本的服务接口',
+        description: '根据用户反馈的修改意见，更新服务接口',
         parameters: z.object({
-          id: z.string().describe('The ID of the ServiceInterfaces document to update'),
+          id: z.string().describe('The ID of the last ServiceInterface document '),
           modifications:z.string().describe('用户反馈的修改意见')
         }),
         execute: async ({ id,modifications }) => {

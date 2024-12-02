@@ -379,7 +379,7 @@ export async function POST(request: Request) {
           id: z.string().describe('The ID of the ServiceInterfaces document to update'),
           modifications:z.string().describe('用户反馈的修改意见')
         }),
-        execute: async ({ id, useCase,previousVersion,modifications }) => {
+        execute: async ({ id,modifications }) => {
           const document = await getDocumentById({ id });
 
           if (!document) {
@@ -413,14 +413,14 @@ export async function POST(request: Request) {
           if (session.user?.id) {
             await saveDocument({
               id,
-              title:useCase,
+              title:document.title,
               content: JSON.stringify(result),
               userId: session.user.id,
             });
           }
           return {
             id,
-            title:useCase,
+            title:document.title,
             content: 'A ServiceInterfaces was updated and is now visible to the user.',
           };
         }catch(e:any){

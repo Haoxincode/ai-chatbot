@@ -14,12 +14,12 @@ export const models: Array<Model> = [
     apiIdentifier: 'gpt-4o-mini',
     description: 'Nebula chat plus for EEA development',
   },
-  {
+/*   {
     id: 'gpt-4o',
     label: 'GPT-4o',
     apiIdentifier: 'gpt-4o',
     description: 'For complex, multi-step tasks',
-  },
+  }, */
   {
     id: 'grok-beta',
     label: 'Nebula Chat Flash',
@@ -34,4 +34,4 @@ export const models: Array<Model> = [
   }, */
 ] as const;
 
-export const DEFAULT_MODEL_NAME: string = 'grok-beta';
+export const DEFAULT_MODEL_NAME: string = 'gpt-4o-mini';

@@ -31,13 +31,13 @@ import { Textarea } from './ui/textarea';
 const suggestedActions = [
   {
     title: '生成时序图',
-    label: '用于用例',
+    label: '根据输入的用例',
     action: '请为汽车小憩模式生成一个时序图',
   },
   {
-    title: '创建服务接口',
-    label: '用于用例',
-    action: '为汽车下雨自动关闭车窗用例创建服务接口',
+    title: '生成服务接口',
+    label: '根据输入的功能设计',
+    action: '为汽车下雨自动关闭车窗的功能设计生成服务接口',
   },
 ];
 

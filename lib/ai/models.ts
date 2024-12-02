@@ -8,21 +8,21 @@ export interface Model {
 }
 
 export const models: Array<Model> = [
-/*   {
+   {
     id: 'gpt-4o-mini',
-    label: 'GPT-4o mini',
+    label: 'Nebula Chat Plus',
     apiIdentifier: 'gpt-4o-mini',
-    description: 'Small model for fast, lightweight tasks',
+    description: 'Nebula chat plus for EEA development',
   },
   {
     id: 'gpt-4o',
     label: 'GPT-4o',
     apiIdentifier: 'gpt-4o',
     description: 'For complex, multi-step tasks',
-  }, */
+  },
   {
     id: 'grok-beta',
-    label: 'Nebula Chat',
+    label: 'Nebula Chat Flash',
     apiIdentifier: 'grok-beta',
     description: 'Nebula chat for EEA development',
   },

@@ -301,17 +301,24 @@ export async function POST(request: Request) {
         }
       },
       generateServiceInterfaces:{
-        description:"根据功能设计的sequence diagram生成相关的服务接口",
+        description:"根据功能设计生成相关的服务接口",
         parameters: z.object({
-          useCase: z.string().describe('功能设计生成的时序图')
+          designId: z.string().describe('The ID of the last design document')
         }),
-        execute: async ({ useCase }) => {
+        execute: async ({ designId }) => {
           try {
             const apiKey = process.env.DIFY_API_DIAGRAM_KEY; // DIFY_API_DIAGRAM_KEY
           if (!apiKey) {
             throw new Error('DIFY_API_KEY is not set');
           }
           
+          const document = await getDocumentById({ id:designId });
+
+          if (!document) {
+            return {
+              error: 'Document not found',
+            };
+          }
           const streamingData = new StreamData();
           const id = generateUUID();
           let draftText = '';
@@ -323,14 +330,14 @@ export async function POST(request: Request) {
 
           streamingData.append({
             type: 'title',
-            content: useCase,
+            content: document.title+"服务接口",
           });
 
           streamingData.append({
             type: 'clear',
             content: '',
           });
-            const data = await runDifyWorkflow({"sequenceDiagram":useCase},apiKey);
+            const data = await runDifyWorkflow({"sequenceDiagram":document.content},apiKey);
             console.log(data)
             let result={serviceInterface:""}
             if(data.data.outputs && data.data.outputs.serviceinterface){
@@ -346,14 +353,14 @@ export async function POST(request: Request) {
             if (session.user?.id) {
               await saveDocument({
                 id,
-                title:useCase,
+                title:document.title+"服务接口",
                 content: JSON.stringify(result),
                 userId: session.user.id,
               });
             }
             return {
               id,
-              title:useCase,
+              title:document.title+"服务接口",
               content: 'A ServiceInterfaces was created and is now visible to the user.',
             };
           }catch(e:any){

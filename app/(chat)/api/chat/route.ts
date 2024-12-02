@@ -92,7 +92,7 @@ export async function POST(request: Request) {
 
   const streamingData = new StreamData();
 
-  const runDifyWorkflow=async(usecase:string,apiKey:string)=>{
+  const runDifyWorkflow=async(params:any,apiKey:string)=>{
     const response = await fetch('https://api.dify.ai/v1/workflows/run', {
       method: 'POST',
       headers: {
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: { usecase:usecase },
+        inputs: { ...params },
         response_mode: "blocking",
         user: "v0-publish"
       }),
@@ -166,7 +166,7 @@ export async function POST(request: Request) {
             content: '',
           });
           try {
-            const data = await runDifyWorkflow(useCase,apiKey);
+            const data = await runDifyWorkflow({usecase:useCase},apiKey);
             let result={sequencediagram:'',markdownContent :""}
             if (data.data && data.data.outputs) {
               if (data.data.outputs.sequencediagram) {
@@ -257,7 +257,7 @@ export async function POST(request: Request) {
           });
 
           try {
-            const data = await runDifyWorkflow(useCase,apiKey);
+            const data = await runDifyWorkflow({usecase:useCase},apiKey);
             let result={sequencediagram:'',markdownContent :""}
             if (data.data && data.data.outputs) {
               if (data.data.outputs.sequencediagram) {
@@ -301,9 +301,9 @@ export async function POST(request: Request) {
         }
       },
       generateServiceInterfaces:{
-        description:"根据用例生成相关的服务接口",
+        description:"根据功能设计的sequence diagram生成相关的服务接口",
         parameters: z.object({
-          useCase: z.string().describe('用例（包含用户反馈和最新版本的时序描述）')
+          useCase: z.string().describe('功能设计生成的时序图')
         }),
         execute: async ({ useCase }) => {
           try {
@@ -330,7 +330,7 @@ export async function POST(request: Request) {
             type: 'clear',
             content: '',
           });
-            const data = await runDifyWorkflow(useCase,apiKey);
+            const data = await runDifyWorkflow({"sequenceDiagram":useCase},apiKey);
             console.log(data)
             let result={serviceInterface:""}
             if(data.data.outputs && data.data.outputs.serviceinterface){
@@ -367,12 +367,14 @@ export async function POST(request: Request) {
 
       },
       updateServiceInterfaces:{
-        description: 'Update a ServiceInterfaces with the given usecase',
+        description: '根据用户反馈的修改意见，更新上一版本的服务接口',
         parameters: z.object({
           id: z.string().describe('The ID of the ServiceInterfaces document to update'),
           useCase: z.string().describe('The use case for the ServiceInterfaces'),
+          previousVersion:z.string().describe('上一版本的服务接口Service Interfaces'),
+          modifications:z.string().describe('用户反馈的修改意见')
         }),
-        execute: async ({ id, useCase }) => {
+        execute: async ({ id, useCase,previousVersion,modifications }) => {
           const document = await getDocumentById({ id });
 
           if (!document) {
@@ -390,7 +392,7 @@ export async function POST(request: Request) {
             throw new Error('DIFY_API_KEY is not set');
           }
           
-          const data = await runDifyWorkflow(useCase,apiKey);
+          const data = await runDifyWorkflow({previousVersion:previousVersion,modifications:modifications},apiKey);
           console.log(data)
           let result={serviceInterface:""}
           if(data.data.outputs && data.data.outputs.serviceinterface){

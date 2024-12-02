@@ -233,9 +233,9 @@ export async function POST(request: Request) {
         description: '基于用例（包含用户反馈和上一版本的时序描述）更新系统或流程的功能设计。它分析现有设计，整合用户反馈，并生成改进的、连贯的功能设计。',
         parameters: z.object({
           id: z.string().describe('The ID of the document to update'),
-          useCase: z.string().describe('用例（包含用户反馈和上一版本的时序描述）'),
+          modifications:z.string().describe('用户反馈的修改意见')
         }),
-        execute: async ({ id, useCase }) => {
+        execute: async ({ id, modifications }) => {
           const document = await getDocumentById({ id });
 
           if (!document) {
@@ -257,7 +257,7 @@ export async function POST(request: Request) {
           });
 
           try {
-            const data = await runDifyWorkflow({usecase:useCase},apiKey);
+            const data = await runDifyWorkflow({modifications:modifications,previousVersion:document.content,},apiKey);
             let result={sequencediagram:'',markdownContent :""}
             if (data.data && data.data.outputs) {
               if (data.data.outputs.sequencediagram) {

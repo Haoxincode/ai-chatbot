@@ -377,8 +377,6 @@ export async function POST(request: Request) {
         description: '根据用户反馈的修改意见，更新上一版本的服务接口',
         parameters: z.object({
           id: z.string().describe('The ID of the ServiceInterfaces document to update'),
-          useCase: z.string().describe('The use case for the ServiceInterfaces'),
-          previousVersion:z.string().describe('上一版本的服务接口Service Interfaces'),
           modifications:z.string().describe('用户反馈的修改意见')
         }),
         execute: async ({ id, useCase,previousVersion,modifications }) => {
@@ -399,7 +397,7 @@ export async function POST(request: Request) {
             throw new Error('DIFY_API_KEY is not set');
           }
           
-          const data = await runDifyWorkflow({previousVersion:previousVersion,modifications:modifications},apiKey);
+          const data = await runDifyWorkflow({previousVersion:document.content,modifications:modifications},apiKey);
           console.log(data)
           let result={serviceInterface:""}
           if(data.data.outputs && data.data.outputs.serviceinterface){

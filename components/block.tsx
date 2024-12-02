@@ -351,25 +351,26 @@ export function Block({
   const handleVersionChange = (type: 'next' | 'prev' | 'toggle' | 'latest') => {
     if (!documents) return;
 
+    let curIndex=currentVersionIndex
     if (type === 'latest') {
+      curIndex=documents.length - 1
       setCurrentVersionIndex(documents.length - 1);
       setMode('edit');
     }
 
     if (type === 'toggle') {
-      setMode((mode) => (mode === 'edit' ? 'diff' : 'edit'));
+      setMode((mode:any) => (mode === 'edit' ? 'diff' : 'edit'));
     }
 
-    let curIndex=currentVersionIndex
     if (type === 'prev') {
       if (currentVersionIndex > 0) {
         curIndex=currentVersionIndex-1
-        setCurrentVersionIndex((index) => index - 1);
+        setCurrentVersionIndex((index:number) => index - 1);
       }
     } else if (type === 'next') {
       if (currentVersionIndex < documents.length - 1) {
         curIndex=currentVersionIndex+1
-        setCurrentVersionIndex((index) => index + 1);
+        setCurrentVersionIndex((index:number) => index + 1);
       }
     }
     console.log(curIndex)

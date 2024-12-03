@@ -152,6 +152,10 @@ export async function POST(request: Request) {
           let draftText = '';
 
           streamingData.append({
+            type: 'clear',
+            content: '',
+          });
+          streamingData.append({
             type: 'id',
             content: id,
           });
@@ -161,10 +165,6 @@ export async function POST(request: Request) {
             content: useCase,
           });
 
-          streamingData.append({
-            type: 'clear',
-            content: '',
-          });
           try {
             const data = await runDifyWorkflow({usecase:useCase},apiKey);
             let result={sequencediagram:'',markdownContent :""}
@@ -324,19 +324,19 @@ export async function POST(request: Request) {
           let draftText = '';
 
           streamingData.append({
+            type: 'clear',
+            content: '',
+          });
+          streamingData.append({
             type: 'id',
             content: id,
           });
 
           streamingData.append({
             type: 'title',
-            content: document.title+"服务接口",
+            content: document.title,
           });
 
-          streamingData.append({
-            type: 'clear',
-            content: '',
-          });
             const data = await runDifyWorkflow({"sequenceDiagram":document.content},apiKey);
             console.log(data)
             let result={serviceInterface:""}

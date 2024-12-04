@@ -6,13 +6,16 @@ import { useCopyToClipboard } from 'usehooks-ts';
 import { toast } from 'sonner';
 import { UIBlock } from './block';
 import { memo } from 'react';
-
+import {downloadIDL,generateIDL}from './diagram'
+import { Download } from 'lucide-react';
 interface BlockActionsProps {
   block: UIBlock;
   handleVersionChange: (type: 'next' | 'prev' | 'toggle' | 'latest') => void;
   currentVersionIndex: number;
   isCurrentVersion: boolean;
   mode: 'read-only' | 'edit' | 'diff';
+  nodes:any
+  serviceInterfaces:any
 }
 
 function PureBlockActions({
@@ -20,10 +23,17 @@ function PureBlockActions({
   handleVersionChange,
   currentVersionIndex,
   isCurrentVersion,
-  mode,
+  mode,nodes,serviceInterfaces
 }: BlockActionsProps) {
   const [_, copyToClipboard] = useCopyToClipboard();
-
+  const handleExport = () => {
+    if (serviceInterfaces.length > 0) {
+      const idl = generateIDL(serviceInterfaces);
+      downloadIDL(idl);
+    } else {
+      //setError('No service interfaces to export');
+    }
+  };
   return (
     <div className="flex flex-row gap-1">
       <Tooltip>
@@ -42,6 +52,22 @@ function PureBlockActions({
         </TooltipTrigger>
         <TooltipContent>Copy to clipboard</TooltipContent>
       </Tooltip>
+      {nodes.length>0 &&<Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="p-2 h-fit dark:hover:bg-zinc-700"
+                  onClick={() => {
+                    handleExport();
+                    toast.success('download success!');
+                  }}
+                  disabled={block.status === 'streaming'}
+                >
+                  <Download size={18} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Export IDL</TooltipContent>
+            </Tooltip>}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button

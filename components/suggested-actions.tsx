@@ -15,15 +15,25 @@ interface SuggestedActionsProps {
 
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
+    // {
+    //   title: 'What is the weather',
+    //   label: 'in San Francisco?',
+    //   action: 'What is the weather in San Francisco?',
+    // },
+    // {
+    //   title: 'Help me draft an essay',
+    //   label: 'about Silicon Valley',
+    //   action: 'Help me draft a short essay about Silicon Valley',
+    // },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: '生成时序图',
+      label: '根据输入的用例',
+      action: '请为汽车小憩模式生成一个时序图',
     },
     {
-      title: 'Help me draft an essay',
-      label: 'about Silicon Valley',
-      action: 'Help me draft a short essay about Silicon Valley',
+      title: '生成服务接口',
+      label: '根据输入的功能设计',
+      action: '为汽车下雨自动关闭车窗的功能设计生成服务接口',
     },
   ];
 

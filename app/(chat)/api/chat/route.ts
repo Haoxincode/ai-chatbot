@@ -114,7 +114,7 @@ export async function POST(request: Request) {
     return data
   }
 
-  const result = streamText({
+  const result =await streamText({
     model: customModel(model.apiIdentifier),
     system: systemPrompt,
     messages: coreMessages,
@@ -457,7 +457,7 @@ export async function POST(request: Request) {
             content: '',
           });
 
-          const { fullStream } = streamText({
+          const { fullStream } =await streamText({
             model: customModel(model.apiIdentifier),
             system:
               'Write about the given topic. Markdown is supported. Use headings wherever appropriate.',
@@ -521,7 +521,7 @@ export async function POST(request: Request) {
             content: document.title,
           });
 
-          const { fullStream } = streamText({
+          const { fullStream } =await streamText({
             model: customModel(model.apiIdentifier),
             system:
               'You are a helpful writing assistant. Based on the description, please update the piece of writing.',
@@ -594,7 +594,7 @@ export async function POST(request: Request) {
             Omit<Suggestion, 'userId' | 'createdAt' | 'documentCreatedAt'>
           > = [];
 
-          const { elementStream } = streamObject({
+          const { elementStream } =await streamObject({
             model: customModel(model.apiIdentifier),
             system:
               'You are a help writing assistant. Given a piece of writing, please offer suggestions to improve the piece of writing and describe the change. It is very important for the edits to contain full sentences instead of just words. Max 5 suggestions.',

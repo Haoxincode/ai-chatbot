@@ -16,7 +16,7 @@ import { PreviewAttachment } from './preview-attachment';
 import { Weather } from './weather';
 import equal from 'fast-deep-equal';
 
-export const PreviewMessage = ({
+const PurePreviewMessage = ({
   chatId,
   message,
   block,

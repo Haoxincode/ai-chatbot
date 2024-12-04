@@ -31,7 +31,7 @@ import {
 import useSWR, { useSWRConfig } from 'swr';
 import { toast } from 'sonner';
 import {useCopyToClipboard, useDebounceCallback, useWindowSize } from 'usehooks-ts';
-import {createNodes,getLayoutedElements,ServiceInterfaceNode,downloadIDL,EventNode,FieldNode,MethodNode,generateIDL}from './diagram'
+import {createNodes,getLayoutedElements,ServiceInterfaceNode,EventNode,FieldNode,MethodNode,}from './diagram'
 
 
 import type { Document, Suggestion, Vote } from '@/lib/db/schema';
@@ -53,7 +53,6 @@ import { BlockMessages } from './block-messages';
 import ReactMarkdown from 'react-markdown'
 
 import Diagram from '@zenuml/core'
-import { Download } from 'lucide-react';
 
 const nodesType={
   serviceInterface: ServiceInterfaceNode,
@@ -396,14 +395,7 @@ function PureBlock({
   const { width: windowWidth, height: windowHeight } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
 
-  const handleExport = () => {
-    if (serviceInterfaces.length > 0) {
-      const idl = generateIDL(serviceInterfaces);
-      downloadIDL(idl);
-    } else {
-      //setError('No service interfaces to export');
-    }
-  };
+  
   return (
     <motion.div
       className="flex flex-row h-dvh w-dvw fixed top-0 left-0 z-50 bg-muted"
@@ -574,23 +566,10 @@ function PureBlock({
             handleVersionChange={handleVersionChange}
             isCurrentVersion={isCurrentVersion}
             mode={mode}
+            nodes={nodes}
+            serviceInterfaces={serviceInterfaces}
           />
-          {nodes.length>0 &&<Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="p-2 h-fit dark:hover:bg-zinc-700"
-                  onClick={() => {
-                    handleExport();
-                    toast.success('download success!');
-                  }}
-                  disabled={block.status === 'streaming'}
-                >
-                  <Download size={18} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Export IDL</TooltipContent>
-            </Tooltip>}
+          
         </div>
 
         <div className="prose dark:prose-invert dark:bg-muted bg-background h-full overflow-y-scroll px-4 py-8 md:p-20 !max-w-full pb-40 items-center">

@@ -1,4 +1,4 @@
-import type { SetStateAction } from 'react';
+import { memo, type SetStateAction } from 'react';
 
 import type { UIBlock } from './block';
 import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from './icons';
@@ -34,7 +34,7 @@ interface DocumentToolResultProps {
   setBlock: (value: SetStateAction<UIBlock>) => void;
 }
 
-export function DocumentToolResult({
+function PureDocumentToolResult({
   type,
   result,
   setBlock,
@@ -86,17 +86,15 @@ export function DocumentToolResult({
   );
 }
 
+export const DocumentToolResult = memo(PureDocumentToolResult, () => true);
+
 interface DocumentToolCallProps {
   type: 'create' | 'update' | 'request-suggestions'|'generateFunctionDesign'|'updateFunctionDesign'|"generateServiceInterfaces";
   args: { title: string };
   setBlock: (value: SetStateAction<UIBlock>) => void;
 }
 
-export function DocumentToolCall({
-  type,
-  args,
-  setBlock,
-}: DocumentToolCallProps) {
+function PureDocumentToolCall({ type, args, setBlock }: DocumentToolCallProps) {
   return (
     <button
       type="button"
@@ -144,3 +142,5 @@ export function DocumentToolCall({
     </button>
   );
 }
+
+export const DocumentToolCall = memo(PureDocumentToolCall, () => true);

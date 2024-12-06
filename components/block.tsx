@@ -112,6 +112,7 @@ function PureBlock({
   setBlock,
   messages,
   setMessages,
+  reload,
   votes,
 }: {
   chatId: string;
@@ -136,6 +137,9 @@ function PureBlock({
     },
     chatRequestOptions?: ChatRequestOptions,
   ) => void;
+  reload: (
+    chatRequestOptions?: ChatRequestOptions,
+  ) => Promise<string | null | undefined>;
 }) {
   const {
     data: documents,
@@ -439,14 +443,15 @@ function PureBlock({
           <div className="flex flex-col h-full justify-between items-center gap-4">
             
             <BlockMessages
-               chatId={chatId}
-               block={block}
-               isLoading={isLoading}
-               setBlock={setBlock}
-               votes={votes}
-               messages={messages}
-             />
- 
+              chatId={chatId}
+              block={block}
+              isLoading={isLoading}
+              setBlock={setBlock}
+              votes={votes}
+              messages={messages}
+              setMessages={setMessages}
+              reload={reload}
+            />
 
             <form className="flex flex-row gap-2 relative items-end w-full px-4 pb-4">
               <MultimodalInput

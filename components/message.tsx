@@ -167,6 +167,7 @@ const PurePreviewMessage = ({
                             result={result}
                             block={block}
                             setBlock={setBlock} 
+                            isReadonly={isReadonly}
                         />
                       ): toolName === 'updateFunctionDesign' ?(
                         <DocumentToolResult 
@@ -174,6 +175,7 @@ const PurePreviewMessage = ({
                           result={result}
                           block={block}
                           setBlock={setBlock} 
+                          isReadonly={isReadonly}
                       />
                     ): toolName === 'generateServiceInterfaces' ?(
                         <DocumentToolResult 
@@ -181,6 +183,7 @@ const PurePreviewMessage = ({
                           result={result}
                           block={block}
                           setBlock={setBlock} 
+                          isReadonly={isReadonly}
                       />
                     )
                       : toolName === 'updateServiceInterfaces' ?(
@@ -189,6 +192,7 @@ const PurePreviewMessage = ({
                           result={result}
                           block={block}
                           setBlock={setBlock} 
+                          isReadonly={isReadonly}
                       />
                     )
                       :
@@ -232,10 +236,12 @@ const PurePreviewMessage = ({
                       <DocumentToolCall
                         type="generateFunctionDesign"
                         args={args}
+                        isReadonly={isReadonly}
                         setBlock={setBlock}
                       />
                     ): toolName === 'updateFunctionDesign' ? (
                       <DocumentToolCall
+                      isReadonly={isReadonly}
                         type="updateFunctionDesign"
                         args={args}
                         setBlock={setBlock}
@@ -245,12 +251,14 @@ const PurePreviewMessage = ({
                         type="generateServiceInterfaces"
                         args={args}
                         setBlock={setBlock}
+                        isReadonly={isReadonly}
                       />
                     ): toolName === 'updateServiceInterfaces' ? (
                       <DocumentToolCall
                         type="update"
                         args={args}
                         setBlock={setBlock}
+                        isReadonly={isReadonly}
                       />
                     ) : null}
                   </div>

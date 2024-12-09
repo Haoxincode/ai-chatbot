@@ -100,6 +100,8 @@ export async function POST(request: Request) {
   });
 
   const runDifyWorkflow=async(params:any,apiKey:string)=>{
+    
+    let user=session&&session.user ?session.user.email:'v0'
     const response = await fetch('https://api.dify.ai/v1/workflows/run', {
       method: 'POST',
       headers: {
@@ -109,7 +111,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         inputs: { ...params },
         response_mode: "blocking",
-        user: "v0-publish"
+        user: user
       }),
     })
   

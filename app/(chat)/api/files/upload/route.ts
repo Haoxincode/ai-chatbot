@@ -48,33 +48,49 @@ export async function POST(request: Request) {
 
     // Get filename from formData since Blob doesn't have name property
     const filename = (formData.get('file') as File).name;
-    const fileBuffer = await file.arrayBuffer();
+    const fileBuffer:any = await file.arrayBuffer();
+    let user:any=session&&session.user ?session.user.email:'v0'
 
+    const formDataNew = new FormData();
+    let fl:any=formData.get('file')
+    formDataNew.append('file', formData.get('file') as File);
+    formDataNew.append("userid",user)
+    console.log(formDataNew)
     try {
       const data = await put(`${filename}`, fileBuffer, {
         access: 'public',
       });
 
       let apiKey=process.env.DIFY_API_SEARCHPCAP_KEY; 
+      const response= await fetch('http://43.129.162.15:9003/api/upload',{
+        method: 'POST',
+        // headers: {
+        //   //'Authorization': `Bearer ${apiKey}`,
+        //   'Content-Type': 'multipart/form-data',
+        // },
+        body:formDataNew
+      })
+
+      console.log(response)
       if(!data.contentType){
         data.contentType='application/vnd.tcpdump.pcapng'
       }
-      let user=session&&session.user ?session.user.email:'v0'
+      
 
       let files:any=[]
-      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          inputs: { },
-          response_mode: "blocking",
-          user: user,
-          files:[{type :"document",transfer_method:"remote_url",url:data.url}]
-        }),
-      })
+      // const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${apiKey}`,
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     inputs: { },
+      //     response_mode: "blocking",
+      //     user: user,
+      //     files:[{type :"document",transfer_method:"remote_url",url:data.url}]
+      //   }),
+      // })
     
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`+apiKey+JSON.stringify(response));

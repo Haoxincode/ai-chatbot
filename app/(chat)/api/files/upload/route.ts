@@ -8,13 +8,13 @@ import { auth } from '@/app/(auth)/auth';
 const FileSchema = z.object({
   file: z
     .instanceof(Blob)
-    .refine((file) => file.size <= 5 * 1024 * 1024, {
+    .refine((file) => file.size <= 10 * 1024 * 1024, {
       message: 'File size should be less than 5MB',
     })
     // Update the file type based on the kind of files you want to accept
-    .refine((file) => ['image/jpeg', 'image/png'].includes(file.type), {
-      message: 'File type should be JPEG or PNG',
-    }),
+    // .refine((file) => ['image/jpeg', 'image/png'].includes(file.type), {
+    //   message: 'File type should be JPEG or PNG',
+    // }),
 });
 
 export async function POST(request: Request) {
@@ -55,6 +55,32 @@ export async function POST(request: Request) {
         access: 'public',
       });
 
+      let apiKey=process.env.DIFY_API_SEARCHPCAP_KEY; 
+      if(!data.contentType){
+        data.contentType='application/vnd.tcpdump.pcapng'
+      }
+      let user=session&&session.user ?session.user.email:'v0'
+
+      let files:any=[]
+      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: { },
+          response_mode: "blocking",
+          user: user,
+          files:[{type :"document",transfer_method:"remote_url",url:data.url}]
+        }),
+      })
+    
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`+apiKey+JSON.stringify(response));
+      }
+      console.log(response.json())
+  
       return NextResponse.json(data);
     } catch (error) {
       return NextResponse.json({ error: 'Upload failed' }, { status: 500 });

@@ -114,7 +114,7 @@ function PureMultimodalInput({
     window.history.replaceState({}, '', `/chat/${chatId}`);
 
     handleSubmit(undefined, {
-      experimental_attachments: attachments,
+      // experimental_attachments: attachments,
     });
 
     setAttachments([]);

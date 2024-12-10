@@ -37,13 +37,10 @@ type AllowedTools =
   | 'requestSuggestions'
   | 'generateFunctionDesign'|"generateServiceInterfaces"|
   "updateFunctionDesign"|"updateServiceInterfaces"
-  | 'getWeather';
+  | 'getWeather'|"searchPcapFile"|"analysisVehicleMessages";
 
 const blocksTools: AllowedTools[] = [
-  'createDocument',
-  'updateDocument',
-  "updateFunctionDesign",
-  'requestSuggestions','generateFunctionDesign',"generateServiceInterfaces","updateServiceInterfaces"
+  'searchPcapFile',"analysisVehicleMessages"
 ];
 
 const weatherTools: AllowedTools[] = ['getWeather'];
@@ -102,6 +99,11 @@ export async function POST(request: Request) {
   const runDifyWorkflow=async(params:any,apiKey:string)=>{
     
     let user=session&&session.user ?session.user.email:'v0'
+
+    let files:any=[]
+    messages[messages.length-1].experimental_attachments?.forEach((file:any)=>{
+      files.push({type :"document",transfer_method:"remote_url",url:file.url,})
+    })
     const response = await fetch('https://api.dify.ai/v1/workflows/run', {
       method: 'POST',
       headers: {
@@ -111,7 +113,8 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         inputs: { ...params },
         response_mode: "blocking",
-        user: user
+        user: user,
+        //files:files
       }),
     })
   
@@ -441,6 +444,47 @@ export async function POST(request: Request) {
         }
       }
 
+      },
+      searchPcapFile:{
+        description: '查询用户已上传的pcap文件是否存在',
+        parameters: z.object({
+        }),
+        execute: async () => {
+          try {
+            const apiKey = process.env.DIFY_API_SEARCHPCAP_KEY; // DIFY_API_DIAGRAM_KEY
+          if (!apiKey) {
+            throw new Error('DIFY_API_KEY is not set');
+          }
+          
+          const data = await runDifyWorkflow({},apiKey);
+          let result=data.data.outputs || ""
+          return result
+          }catch(e){
+            console.log(e)
+          }
+        }
+      },
+      analysisVehicleMessages:{
+        description: '分析各种车载协议的报文，目前仅支持diagnostic，someip',
+        parameters: z.object({
+          analysisRequest: z.string().describe('用户分析请求'),
+          protocol:z.string().describe('支持分析的协议，枚举量：diagnostic，SOMEIP')
+        }),
+        execute: async ({ analysisRequest,protocol }) => {
+          
+          try {
+            const apiKey = process.env.DIFY_API_ANALYSIS_KEY; // DIFY_API_DIAGRAM_KEY
+          if (!apiKey) {
+            throw new Error('DIFY_API_KEY is not set');
+          }
+          
+          const data = await runDifyWorkflow({analysisRequest,protocol},apiKey);
+          let result=data.data.outputs || ""
+          return {result}
+          }catch(e){
+            console.log(e)
+          }
+        }
       },
       createDocument: {
         description: 'Create a document for a writing activity',

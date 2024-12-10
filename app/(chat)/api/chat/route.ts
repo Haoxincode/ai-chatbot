@@ -473,7 +473,7 @@ export async function POST(request: Request) {
         execute: async ({ analysisRequest,protocol }) => {
           
           try {
-            const apiKey = process.env.DIFY_API_ANALYSIS_KEY; // DIFY_API_DIAGRAM_KEY
+            const apiKey = process.env.DIFY_API_ANALYSIS_KEY; // DIFY_API_ANALYSIS_KEY
           if (!apiKey) {
             throw new Error('DIFY_API_KEY is not set');
           }

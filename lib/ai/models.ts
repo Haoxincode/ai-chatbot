@@ -14,12 +14,12 @@ export const models: Array<Model> = [
     apiIdentifier: 'gpt-4o-mini',
     description: 'Nebula chat plus for EEA development',
   },
-/*   {
+  {
     id: 'gpt-4o',
-    label: 'GPT-4o',
+    label: 'Nebula Chat Ultra',
     apiIdentifier: 'gpt-4o',
-    description: 'For complex, multi-step tasks',
-  }, */
+    description: 'Vehicle Packet Analysis ',
+  }, 
   {
     id: 'grok-beta',
     label: 'Nebula Chat Flash',

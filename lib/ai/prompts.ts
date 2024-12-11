@@ -20,7 +20,7 @@ export const blocksPrompt = `
   - Inform user if file check fails
 
   **When to use \`analysisVehicleMessages\`:**
-  - For analyzing diagnostic or SOMEIP communications
+  - For analyzing diagnostic communications
   - When specific protocol analysis is requested
   - For detailed message flow examination
   - When troubleshooting communication issues
@@ -34,7 +34,7 @@ export const blocksPrompt = `
   **Using \`analysisVehicleMessages\`:**
   Parameters:
   - analysisRequest: User's specific analysis request
-  - protocol: "diagnostic" or "SOMEIP"
+  - protocol: "diagnostic"
 
   Usage patterns:
   1. Diagnostic Protocol Analysis:
@@ -44,12 +44,6 @@ export const blocksPrompt = `
      - Timing analysis
      - Security access sequences
 
-  2. SOMEIP Protocol Analysis:
-     - Service discovery
-     - Method calls
-     - Event handling
-     - Error patterns
-     - Communication flow
 
   Analysis Process:
   1. Verify file existence using searchPcapFile
@@ -57,20 +51,6 @@ export const blocksPrompt = `
   3. Form specific analysis request
   4. Call analysisVehicleMessages with parameters
   5. Interpret and explain results
-
-  Example Usage:
-
-  User: "分析test.pcapng中的UDS通信"
-  Assistant: Let me analyze the UDS communication:
-
-  1. First, verify file existence:
-  <call>searchPcapFile</call>
-
-  2. If file exists, proceed with analysis:
-  <call>analysisVehicleMessages({
-    analysisRequest: "分析完整的UDS通信流程，包括会话建立、服务请求和响应",
-    protocol: "diagnostic"
-  })</call>
 
   Remember:
   1. Always check file existence first

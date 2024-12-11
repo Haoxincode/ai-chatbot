@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { MessageEditor } from './message-editor';
-
+import UploadResult from "@/components/upload-result"
 const PurePreviewMessage = ({
   chatId,
   message,
@@ -194,7 +194,8 @@ const PurePreviewMessage = ({
                           setBlock={setBlock} 
                           isReadonly={isReadonly}
                       />
-                    )
+                    ): toolName ==='searchPcapFile'?
+                    <UploadResult result={result} />
                       :
                       (
                         <pre>{JSON.stringify(result, null, 2)}</pre>

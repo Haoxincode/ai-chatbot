@@ -479,7 +479,7 @@ export async function POST(request: Request) {
           }
           
           const data = await runDifyWorkflow({analysisRequest,protocol},apiKey);
-          let result=data.data.outputs || ""
+          let result=data.data.outputs.result || ""
           return {result}
           }catch(e){
             console.log(e)

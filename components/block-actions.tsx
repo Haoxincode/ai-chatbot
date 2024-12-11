@@ -26,6 +26,7 @@ function PureBlockActions({
   mode,nodes,serviceInterfaces
 }: BlockActionsProps) {
   const [_, copyToClipboard] = useCopyToClipboard();
+  console.log(nodes)
   const handleExport = () => {
     if (serviceInterfaces.length > 0) {
       const idl = generateIDL(serviceInterfaces);
@@ -52,7 +53,7 @@ function PureBlockActions({
         </TooltipTrigger>
         <TooltipContent>Copy to clipboard</TooltipContent>
       </Tooltip>
-      {nodes.length>0 &&<Tooltip>
+      {serviceInterfaces.length>0 &&<Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"

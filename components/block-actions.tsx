@@ -1,3 +1,4 @@
+"use client"
 import { cn } from '@/lib/utils';
 import { CopyIcon, DeltaIcon, RedoIcon, UndoIcon } from './icons';
 import { Button } from './ui/button';
@@ -8,6 +9,9 @@ import { UIBlock } from './block';
 import { memo } from 'react';
 import {downloadIDL,generateIDL}from './diagram'
 import { Download } from 'lucide-react';
+import {
+  useEffect,
+} from 'react';
 interface BlockActionsProps {
   block: UIBlock;
   handleVersionChange: (type: 'next' | 'prev' | 'toggle' | 'latest') => void;
@@ -26,7 +30,7 @@ function PureBlockActions({
   mode,nodes,serviceInterfaces
 }: BlockActionsProps) {
   const [_, copyToClipboard] = useCopyToClipboard();
-  console.log(nodes)
+ 
   const handleExport = () => {
     if (serviceInterfaces.length > 0) {
       const idl = generateIDL(serviceInterfaces);
@@ -35,6 +39,7 @@ function PureBlockActions({
       //setError('No service interfaces to export');
     }
   };
+
   return (
     <div className="flex flex-row gap-1">
       <Tooltip>
@@ -53,7 +58,7 @@ function PureBlockActions({
         </TooltipTrigger>
         <TooltipContent>Copy to clipboard</TooltipContent>
       </Tooltip>
-      {serviceInterfaces.length>0 &&<Tooltip>
+      {block.content.indexOf("serviceInterface")>0 &&<Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"

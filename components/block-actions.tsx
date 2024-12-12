@@ -36,6 +36,13 @@ function PureBlockActions({
       const idl = generateIDL(serviceInterfaces);
       downloadIDL(idl);
     } else {
+      if(block.content.indexOf('serviceInterface')>-1){
+        let service=JSON.parse(block.content)
+        if(service &&service.serviceInterface){
+          const idl = generateIDL(service.serviceInterface);
+          downloadIDL(idl);
+        }
+      }
       //setError('No service interfaces to export');
     }
   };

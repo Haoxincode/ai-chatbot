@@ -175,6 +175,10 @@ export async function POST(request: Request) {
           });
 
           streamingData.append({
+            type: 'kind',
+            content: "text",
+          });
+          streamingData.append({
             type: 'title',
             content: useCase,
           });
@@ -224,7 +228,7 @@ export async function POST(request: Request) {
               await saveDocument({
                 id,
                 title:useCase,
-                kind:"text",
+                kind:'text',
                 content: JSON.stringify(result),
                 userId: session.user.id,
               });
@@ -232,6 +236,7 @@ export async function POST(request: Request) {
   
             return {
               id,
+              kind:'text',
               title:useCase,
               content: 'A generateFunctionDesign was created and is now visible to the user.',
             };
@@ -304,6 +309,7 @@ export async function POST(request: Request) {
   
             return {
               id,
+              kind:"text",
               title: document.title,
               content: 'The generateFunctionDesign has been updated successfully.',
             };
@@ -349,6 +355,10 @@ export async function POST(request: Request) {
           });
 
           streamingData.append({
+            type: 'kind',
+            content: "text",
+          });
+          streamingData.append({
             type: 'title',
             content: document.title,
           });
@@ -379,6 +389,7 @@ export async function POST(request: Request) {
             return {
               id,
               title:document.title+"服务接口",
+              kind:"text",
               content: 'A ServiceInterfaces was created and is now visible to the user.',
             };
           }catch(e:any){
@@ -440,6 +451,7 @@ export async function POST(request: Request) {
           }
           return {
             id,
+            kind:"text",
             title:document.title,
             content: 'A ServiceInterfaces was updated and is now visible to the user.',
           };

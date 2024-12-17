@@ -35,7 +35,7 @@ import {createNodes,getLayoutedElements,ServiceInterfaceNode,EventNode,FieldNode
 
 
 import type { Document, Suggestion, Vote } from '@/lib/db/schema';
-import { fetcher } from '@/lib/utils';
+import { cn, fetcher } from '@/lib/utils';
 
 import { DiffView } from './diffview';
 import { DocumentSkeleton } from './document-skeleton';
@@ -53,7 +53,10 @@ import { BlockMessages } from './block-messages';
 import ReactMarkdown from 'react-markdown'
 
 import Diagram from '@zenuml/core'
+import { CodeEditor } from './code-editor';
+import { Console } from './console';
 
+export type BlockKind = 'text' | 'code';
 const nodesType={
   serviceInterface: ServiceInterfaceNode,
   method: MethodNode,
@@ -86,6 +89,7 @@ interface ZenUMLRendererProps {
 export interface UIBlock {
   title: string;
   documentId: string;
+  kind: BlockKind;
   content: string;
   sequenceDiagram?:any
   isVisible: boolean;
@@ -96,6 +100,12 @@ export interface UIBlock {
     width: number;
     height: number;
   };
+}
+
+export interface ConsoleOutput {
+  id: string;
+  status: 'in_progress' | 'completed' | 'failed';
+  content: string | null;
 }
 
 function PureBlock({
@@ -167,6 +177,9 @@ function PureBlock({
   const [mode, setMode] = useState<'edit' | 'diff'>('edit');
   const [document, setDocument] = useState<Document | null>(null);
   const [currentVersionIndex, setCurrentVersionIndex] = useState(-1);
+  const [consoleOutputs, setConsoleOutputs] = useState<Array<ConsoleOutput>>(
+    [],
+  );
 
   useEffect(() => {
     if (documents && documents.length > 0) {
@@ -303,6 +316,7 @@ function PureBlock({
               body: JSON.stringify({
                 title: block.title,
                 content: updatedContent,
+                kind: block.kind,
               }),
             });
 
@@ -477,7 +491,7 @@ function PureBlock({
       )}
 
       <motion.div
-        className="fixed dark:bg-muted bg-background h-dvh flex flex-col shadow-xl overflow-y-scroll"
+        className="fixed dark:bg-muted bg-background h-dvh flex flex-col overflow-y-scroll"
         initial={
           isMobile
             ? {
@@ -576,50 +590,60 @@ function PureBlock({
             mode={mode}
             nodes={nodes}
             serviceInterfaces={serviceInterfaces}
+            setConsoleOutputs={setConsoleOutputs}
           />
           
         </div>
 
-        <div className="prose dark:prose-invert dark:bg-muted bg-background h-full overflow-y-scroll px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
-          {
-            diagramCode&&
-            ( <div className="prose dark:prose-invert dark:bg-muted bg-background px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
-              {diagramCode && (
-                <ZenUMLRenderer code={diagramCode} height="100%" width="100%" />
-              )}{/* 其他内容 */}
-              {description && (
-                <div className="mt-4 bg-white text-zinc-950 rounded-lg p-6 border border-zinc-200">
-                  <h1 className="text-lg font-semibold mb-2">Sequence Description</h1>
-                  <div className="w-full h-px bg-zinc-200 mb-4"></div>
-                  <div className="prose max-w-none">
-                    <ReactMarkdown>{description}</ReactMarkdown>
-                  </div>
+        <div className={cn(
+            'prose dark:prose-invert dark:bg-muted bg-background h-full overflow-y-scroll !max-w-full pb-40 items-center',
+            {
+              'py-2 px-2': block.kind === 'code',
+              'py-8 md:p-20 px-4': block.kind === 'text',
+            },
+          )}
+        >{
+          diagramCode&&
+          ( <div className="prose dark:prose-invert dark:bg-muted bg-background px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
+            {diagramCode && (
+              <ZenUMLRenderer code={diagramCode} height="100%" width="100%" />
+            )}{/* 其他内容 */}
+            {description && (
+              <div className="mt-4 bg-white text-zinc-950 rounded-lg p-6 border border-zinc-200">
+                <h1 className="text-lg font-semibold mb-2">Sequence Description</h1>
+                <div className="w-full h-px bg-zinc-200 mb-4"></div>
+                <div className="prose max-w-none">
+                  <ReactMarkdown>{description}</ReactMarkdown>
                 </div>
-              )}
-            </div>)
-          }
-        {nodes.length > 0 && (<div style={{ height: 800 }}>
-          <ReactFlow 
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            connectionMode={ConnectionMode.Loose}
-            fitView
-            nodeTypes={nodesType}
-          >
-            <Background />
-            <Controls />
-            <MiniMap />
-          </ReactFlow></div>
-        )}
-          {!diagramCode&&nodes.length<1 &&<div className="flex flex-row max-w-[600px] mx-auto">
-         
-            {isDocumentsFetching && !block.content&&!diagramCode ? (
+              </div>
+            )}
+          </div>)
+        }
+      {nodes.length > 0 && (<div style={{ height: 800 }}>
+        <ReactFlow 
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          connectionMode={ConnectionMode.Loose}
+          fitView
+          nodeTypes={nodesType}
+        >
+          <Background />
+          <Controls />
+          <MiniMap />
+        </ReactFlow></div>
+      )}
+        {!diagramCode&&nodes.length<1 &&<div className={cn('flex flex-row', {
+              '': block.kind === 'code',
+              'mx-auto max-w-[600px]': block.kind === 'text',
+            })}>
+       
+            {isDocumentsFetching && !block.content ? (
               <DocumentSkeleton />
-            ) : mode === 'edit' ? (
-              <Editor
+            ) : block.kind === 'code' ? (
+              <CodeEditor
                 content={
                   isCurrentVersion
                     ? block.content
@@ -627,9 +651,9 @@ function PureBlock({
                 }
                 isCurrentVersion={isCurrentVersion}
                 currentVersionIndex={currentVersionIndex}
+                suggestions={suggestions ?? []}
                 status={block.status}
                 saveContent={saveContent}
-                suggestions={isCurrentVersion ? (suggestions ?? []) : []}
               />
             ) : (
               <DiffView
@@ -637,7 +661,7 @@ function PureBlock({
                 newContent={getDocumentContentById(currentVersionIndex)}
               />
             )}
-            
+
             {suggestions ? (
               <div className="md:hidden h-dvh w-12 shrink-0" />
             ) : null}
@@ -651,6 +675,7 @@ function PureBlock({
                   isLoading={isLoading}
                   stop={stop}
                   setMessages={setMessages}
+                  blockKind={block.kind}
                 />
               )}
             </AnimatePresence>
@@ -666,6 +691,13 @@ function PureBlock({
               handleVersionChange={handleVersionChange}
             />
           )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          <Console
+            consoleOutputs={consoleOutputs}
+            setConsoleOutputs={setConsoleOutputs}
+          />
         </AnimatePresence>
       </motion.div>
     </motion.div>

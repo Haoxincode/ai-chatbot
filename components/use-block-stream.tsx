@@ -4,19 +4,24 @@ import { useSWRConfig } from 'swr';
 
 import type { Suggestion } from '@/lib/db/schema';
 
-import type { UIBlock } from './block';
+import type { BlockKind, UIBlock } from './block';
 import { useUserMessageId } from '@/hooks/use-user-message-id';
 import Diagram from '@zenuml/core';
 
 
 type StreamingDelta = {
-  type: | 'text-delta'|"design"|"diagram" 
-  | 'title'
-  | 'id'
-  | 'suggestion'
-  | 'clear'
-  | 'finish'
-  | 'user-message-id';
+  type:
+    | 'text-delta'|"design"|"diagram" 
+    
+    | 'code-delta'
+    | 'title'
+    | 'id'
+    | 'suggestion'
+    | 'clear'
+    | 'finish'
+    | 'user-message-id'
+    | 'kind';
+
   content: string | Suggestion;
 };
 
@@ -67,6 +72,12 @@ export function useBlockStream({
             title: delta.content as string,
           };
 
+        case 'kind':
+          return {
+            ...draftBlock,
+            kind: delta.content as BlockKind,
+          };
+
         case 'text-delta':
           return {
             ...draftBlock,
@@ -79,7 +90,7 @@ export function useBlockStream({
                 : draftBlock.isVisible,
             status: 'streaming',
           };
-        case 'design':
+          case 'design':
           return {
             ...draftBlock,
             sequenceDiagram:draftBlock.content,
@@ -93,6 +104,20 @@ export function useBlockStream({
             isVisible:true,
             status: 'streaming',
           }
+
+          case 'code-delta':
+            return {
+              ...draftBlock,
+              content: delta.content as string,
+              isVisible:
+                draftBlock.status === 'streaming' &&
+                draftBlock.content.length > 20 &&
+                draftBlock.content.length < 30
+                  ? true
+                  : draftBlock.isVisible,
+              status: 'streaming',
+            };
+  
         case 'suggestion':
           setTimeout(() => {
             setOptimisticSuggestions((currentSuggestions) => [
@@ -120,5 +145,5 @@ export function useBlockStream({
           return draftBlock;
       }
     });
-  }, [streamingData, setBlock]);
+  }, [streamingData, setBlock, setUserMessageIdFromServer]);
 }

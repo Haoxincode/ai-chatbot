@@ -1,6 +1,6 @@
 import { memo, type SetStateAction } from 'react';
 
-import type { UIBlock } from './block';
+import type { BlockKind, UIBlock } from './block';
 import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from './icons';
 import { toast } from 'sonner';
 import {Paintbrush} from 'lucide-react'
@@ -31,7 +31,7 @@ const getActionText = (
 
 interface DocumentToolResultProps {
   type: 'create' | 'update' | 'request-suggestions'|'generateFunctionDesign'|"updateFunctionDesign"|"generateServiceInterfaces";
-  result: { id: string; title: string };
+  result: { id: string; title: string ; kind: BlockKind };
   block: UIBlock;
   setBlock: (value: SetStateAction<UIBlock>) => void;
   isReadonly: boolean;
@@ -66,6 +66,7 @@ function PureDocumentToolResult({
 
         setBlock({
           documentId: result.id,
+          kind: result.kind,
           content: '',
           sequenceDiagram:"",
           title: result.title,

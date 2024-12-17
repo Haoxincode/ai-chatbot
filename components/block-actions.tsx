@@ -240,23 +240,6 @@ function PureBlockActions({
         </TooltipTrigger>
         <TooltipContent>View Next version</TooltipContent>
       </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="p-2 h-fit dark:hover:bg-zinc-700"
-            onClick={() => {
-              copyToClipboard(block.content);
-              toast.success('Copied to clipboard!');
-            }}
-            disabled={block.status === 'streaming'}
-          >
-            <CopyIcon size={18} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Copy to clipboard</TooltipContent>
-      </Tooltip>
     </div>
   );
 }

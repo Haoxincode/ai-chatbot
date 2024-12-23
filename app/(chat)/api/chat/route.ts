@@ -489,9 +489,9 @@ export async function POST(request: Request) {
               });
 
               dataStream.writeData({
-            type: 'clear',
-            content: '',
-          });
+                type: 'clear',
+                content: '',
+              });
 
           if (kind === 'text') {
             const { fullStream } = streamText({

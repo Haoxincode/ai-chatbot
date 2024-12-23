@@ -154,6 +154,30 @@ const PurePreviewMessage = ({
                           result={result}
                           isReadonly={isReadonly}
                         />
+                      )  : toolName === 'generateFunctionDesign' ? (
+                        <DocumentToolResult
+                          type="generateFunctionDesign"
+                          result={result}
+                          isReadonly={isReadonly}
+                        />
+                      ): toolName === 'generateServiceInterfaces' ? (
+                        <DocumentToolResult
+                          type="generateServiceInterfaces"
+                          result={result}
+                          isReadonly={isReadonly}
+                        />
+                      ): toolName === 'updateFunctionDesign' ? (
+                        <DocumentToolResult
+                          type="updateFunctionDesign"
+                          result={result}
+                          isReadonly={isReadonly}
+                        />
+                      )  : toolName === 'updateServiceInterfaces' ? (
+                        <DocumentToolResult
+                          type="generateServiceInterfaces"
+                          result={result}
+                          isReadonly={isReadonly}
+                        />
                       ) : (
                         <pre>{JSON.stringify(result, null, 2)}</pre>
                       )}

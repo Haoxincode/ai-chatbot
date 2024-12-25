@@ -8,7 +8,7 @@ export interface Model {
 }
 
 export const models: Array<Model> = [
-   {
+  {
     id: 'gpt-4o-mini',
     label: 'Nebula Chat Plus',
     apiIdentifier: 'gpt-4o-mini',
@@ -21,17 +21,30 @@ export const models: Array<Model> = [
     description: 'For complex, multi-step tasks',
   }, */
   {
-    id: 'grok-beta',
+    id: 'gemini-2-flash',
     label: 'Nebula Chat Flash',
-    apiIdentifier: 'grok-beta',
-    description: 'Nebula chat for EEA development',
+    apiIdentifier: 'gemini-2.0-flash-exp',
+    description: 'Fast and efficient Gemini model for Nebula chat',
   },
 /*   {
-    id: 'grok-vision-beta',
+    id: 'grok-2-1212',
+    label: 'Nebula Chat Flash',
+    apiIdentifier: 'grok-2-1212',
+    description: 'Nebula chat for EEA development',
+  }, */
+/*   {
+    id: 'grok-2-vision-1212',
     label: 'Grok Vision Beta',
-    apiIdentifier: 'grok-vision-beta',
+    apiIdentifier: 'grok-2-vision-1212',
     description: 'xAI\'s multimodal model supporting image input',
   }, */
+  {
+    id: 'groq-llama',
+    label: 'Nebula Chat Ultra ',
+    apiIdentifier: 'llama-3.3-70b-versatile',
+    description: 'Nebula chat ultra for EEA development ',
+  }
 ] as const;
 
 export const DEFAULT_MODEL_NAME: string = 'gpt-4o-mini';
+

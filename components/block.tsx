@@ -260,8 +260,17 @@ function PureBlock({
         if(content.indexOf('serviceInterface')>-1){
             parseInterface(content)
         }
-      }
-      
+      }else{
+        
+        if (documents && documents.length > 0) {
+          const mostRecentDocument = documents[documents.length-2];
+          console.log(mostRecentDocument)
+            if(block.title!==mostRecentDocument?.title){
+              setDiagramCode('')
+              setNodes([])
+            }
+          }
+        }
       // if (sequenceDiagram && sequenceDiagram.includes('sequenceDescription')) {
       //   let str= sequenceDiagram.split('outputs')[1].replace(':','')
       //   let rel=str.split('sequenceDescription')[0]

@@ -211,6 +211,30 @@ const PurePreviewMessage = ({
                         args={args}
                         isReadonly={isReadonly}
                       />
+                    )  : toolName === 'generateFunctionDesign' ? (
+                      <DocumentToolCall
+                        type="generateFunctionDesign"
+                        args={args}
+                        isReadonly={isReadonly}
+                      />
+                    ): toolName === 'generateServiceInterfaces' ? (
+                      <DocumentToolCall
+                        type="generateServiceInterfaces"
+                        args={args}
+                        isReadonly={isReadonly}
+                      />
+                    ): toolName === 'updateFunctionDesign' ? (
+                      <DocumentToolCall
+                        type="updateFunctionDesign"
+                        args={args}
+                        isReadonly={isReadonly}
+                      />
+                    )  : toolName === 'updateServiceInterfaces' ? (
+                      <DocumentToolCall
+                        type="generateServiceInterfaces"
+                        args={args}
+                        isReadonly={isReadonly}
+                      />
                     ) : null}
                   </div>
                 );

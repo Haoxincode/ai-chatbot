@@ -24,7 +24,7 @@ export const models: Array<Model> = [
     id: 'gemini-2-flash',
     label: 'Nebula Chat Flash',
     apiIdentifier: 'gemini-2.0-flash-exp',
-    description: 'Fast and efficient Gemini model for Nebula chat',
+    description: 'Nebula chat flash for EEA development',
   },
 /*   {
     id: 'grok-2-1212',

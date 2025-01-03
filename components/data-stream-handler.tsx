@@ -10,7 +10,7 @@ import { cx } from 'class-variance-authority';
 
 type DataStreamDelta = {
   type:
-    | 'text-delta'|'diagram'|'design'
+    | 'text-delta'|'diagram'|'design'|'mermaid'
     | 'code-delta'
     | 'title'
     | 'id'
@@ -75,6 +75,17 @@ export function DataStreamHandler({ id }: { id: string }) {
                 draftBlock.status === 'streaming' &&
                 draftBlock.content.length > 400 &&
                 draftBlock.content.length < 450
+                  ? true
+                  : draftBlock.isVisible,
+              status: 'streaming',
+            };
+          case 'mermaid':
+            return {
+              ...draftBlock,
+              content: draftBlock.content + (delta.content as string),
+              isVisible:
+                draftBlock.status === 'streaming' &&
+                draftBlock.content.length > 100 
                   ? true
                   : draftBlock.isVisible,
               status: 'streaming',

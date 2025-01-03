@@ -136,7 +136,14 @@ const PurePreviewMessage = ({
                     <div key={toolCallId}>
                       {toolName === 'getWeather' ? (
                         <Weather weatherAtLocation={result} />
-                      ) : toolName === 'createDocument' ? (
+                      ):toolName==='createMermaid'?(
+                        <DocumentToolResult
+                          type="createMermaid"
+                          result={result}
+                          isReadonly={isReadonly}
+                        />
+                      ) 
+                      : toolName === 'createDocument' ? (
                         <DocumentToolResult
                           type="create"
                           result={result}
@@ -193,7 +200,13 @@ const PurePreviewMessage = ({
                   >
                     {toolName === 'getWeather' ? (
                       <Weather />
-                    ) : toolName === 'createDocument' ? (
+                    ) : toolName === 'createMermaid' ? (
+                      <DocumentToolCall
+                        type="createMermaid"
+                        args={args}
+                        isReadonly={isReadonly}
+                      />
+                    ): toolName === 'createDocument' ? (
                       <DocumentToolCall
                         type="create"
                         args={args}

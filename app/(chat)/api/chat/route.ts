@@ -40,14 +40,14 @@ type AllowedTools =
   | 'updateDocument'
   | 'requestSuggestions'
   | 'generateFunctionDesign'|"generateServiceInterfaces"|
-  "updateFunctionDesign"|"updateServiceInterfaces"
+  "updateFunctionDesign"|"updateServiceInterfaces"|'createMermaid'
   | 'getWeather';
 
 const blocksTools: AllowedTools[] = [
   'createDocument',
   'updateDocument',
   "updateFunctionDesign",
-  'requestSuggestions','generateFunctionDesign',"generateServiceInterfaces","updateServiceInterfaces"
+  'requestSuggestions','generateFunctionDesign',"generateServiceInterfaces","updateServiceInterfaces",'createMermaid'
 ];
 
 const weatherTools: AllowedTools[] = ['getWeather'];
@@ -462,6 +462,76 @@ export async function POST(request: Request) {
             }
           }
       
+          },
+          createMermaid:{
+            description: 'Create a mermaid code for a writing activity.如果有图片识别图片的时序图并触发createmermaid。',
+            parameters: z.object({
+              title: z.string(),
+            }),
+            execute: async ({ title, kind='text' }) => {
+              const id = generateUUID();
+              let draftText = '';
+
+              dataStream.writeData({
+                type: 'id',
+                content: id,
+              });
+
+              dataStream.writeData({
+                type: 'title',
+                content: title,
+              });
+
+              dataStream.writeData({
+                type: 'kind',
+                content: kind,
+              });
+
+              dataStream.writeData({
+                type: 'clear',
+                content: '',
+              });
+
+              const { fullStream } = streamText({
+                model: customModel(model.apiIdentifier),
+                system:
+                  'Write mermaid about the given topic. ',
+                prompt: title,
+              });
+  
+                  for await (const delta of fullStream) {
+                    const { type } = delta;
+  
+                    if (type === 'text-delta') {
+                      const { textDelta } = delta;
+  
+                      draftText += textDelta;
+                      dataStream.writeData({
+                        type: 'mermaid',
+                        content: textDelta,
+                      });
+                    }
+                  }
+  
+                  dataStream.writeData({ type: 'finish', content: '' });
+                  if (session.user?.id) {
+                    await saveDocument({
+                      id,
+                      title,
+                      kind,
+                      content: draftText,
+                      userId: session.user.id,
+                    });
+                  }
+    
+                  return {
+                    id,
+                    title,
+                    kind,
+                    content:
+                      'A mermaid was created and is now visible to the user.',
+                  };
+            }
           },
           createDocument: {
             description: 'Create a document for a writing activity.',

@@ -3,11 +3,12 @@ import { memo } from 'react';
 import type { BlockKind } from './block';
 import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from './icons';
 import { toast } from 'sonner';
-import {Paintbrush} from 'lucide-react'
+import {Paintbrush,Tangent} from 'lucide-react'
 import { useBlock } from '@/hooks/use-block';
 
 const getActionText = (
-  type: 'create' | 'update' | 'request-suggestions'|"generateFunctionDesign"|"updateFunctionDesign"|"generateServiceInterfaces",
+  type: 'create' | 'update' | 
+  'request-suggestions'|"generateFunctionDesign"|"updateFunctionDesign"|"generateServiceInterfaces"|'createMermaid',
   tense: 'present' | 'past',
 ) => {
   switch (type) {
@@ -25,13 +26,16 @@ const getActionText = (
       return tense === 'present'?"Updating":"Updated"
     case "generateServiceInterfaces":
       return tense === 'present'?"Drawing":"Drawn"
+    case "createMermaid":
+      return tense === 'present'?"Creating":"Created"
     default:
       return null;
   }
 };
 
 interface DocumentToolResultProps {
-  type: 'create' | 'update' | 'request-suggestions'|'generateFunctionDesign'|"updateFunctionDesign"|"generateServiceInterfaces";
+  type: 'create' | 'update' | 'request-suggestions'|'generateFunctionDesign'|"updateFunctionDesign"|
+  "generateServiceInterfaces"|'createMermaid';
   result: { id: string; title: string; kind: BlockKind };
   isReadonly: boolean;
 }
@@ -89,7 +93,9 @@ function PureDocumentToolResult({
           <Paintbrush size={16}  />
         ) :type === 'generateServiceInterfaces' ? (
           <Paintbrush size={16}  />
-        ) : null}
+        ) : type === 'createMermaid' ? (
+          <Tangent size={16}  />
+        ): null}
       </div>
       <div className="text-left">
         {`${getActionText(type, 'past')} "${result.title}"`}
@@ -101,7 +107,8 @@ function PureDocumentToolResult({
 export const DocumentToolResult = memo(PureDocumentToolResult, () => true);
 
 interface DocumentToolCallProps {
-  type: 'create' | 'update' | 'request-suggestions'|'generateFunctionDesign'|'updateFunctionDesign'|"generateServiceInterfaces";
+  type: 'create' | 'update' | 'request-suggestions'|
+  'generateFunctionDesign'|'updateFunctionDesign'|"generateServiceInterfaces"|'createMermaid';
   args: { title: string };
   isReadonly: boolean;
 }
@@ -155,6 +162,8 @@ function PureDocumentToolCall({
             <Paintbrush size={16}  />
           ) :type === 'generateServiceInterfaces' ? (
             <Paintbrush size={16}  />
+          ): type === 'createMermaid' ? (
+            <Tangent size={16}  />
           ): null}
         </div>
 

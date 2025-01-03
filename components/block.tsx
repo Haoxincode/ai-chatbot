@@ -58,8 +58,9 @@ import { Console } from './console';
 import { useSidebar } from './ui/sidebar';
 import { useBlock } from '@/hooks/use-block';
 import equal from 'fast-deep-equal';
+import Mermaid from './mermaid/mermaid';
 
-export type BlockKind = 'text' | 'code';
+export type BlockKind = 'text' | 'code' |'mermaid';
 const nodesType={
   serviceInterface: ServiceInterfaceNode,
   method: MethodNode,
@@ -246,6 +247,9 @@ function PureBlock({
       console.log(e)
     }
   }
+
+  let [mermaid,setMermaid]=useState('')
+  let [autoSvg,setAutoSvg]=useState(false)
   useEffect(() => {
       // 假设您在这里获取 generateFunctionDesign 的输出
       const { content } = block; // 根据实际情况调整
@@ -259,6 +263,14 @@ function PureBlock({
         }
         if(content.indexOf('serviceInterface')>-1){
             parseInterface(content)
+        }
+        if(content.indexOf('```mermaid')>-1){
+          let mermaid=content.replaceAll('```mermaid','').split('```')[0]
+          setMermaid(mermaid)
+          console.log('mermaid',mermaid)
+          if(block.status!=='streaming'){
+            setAutoSvg(true)
+          }
         }
       }else{
         
@@ -635,6 +647,12 @@ function PureBlock({
           )}
         >
           {
+          mermaid&&
+          ( <div className="prose dark:prose-invert dark:bg-muted bg-background px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
+            <Mermaid chart={mermaid} setChart={setMermaid} autoSvg={autoSvg}/>
+          </div>)
+        }
+          {
           diagramCode&&
           ( <div className="prose dark:prose-invert dark:bg-muted bg-background px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
             {diagramCode && (
@@ -667,7 +685,7 @@ function PureBlock({
           <MiniMap />
         </ReactFlow></div>
       )}
-          {!diagramCode&&nodes.length<1 &&<div className={cn('flex flex-row', {
+          {!diagramCode&&nodes.length<1 &&block.content.indexOf('```mermaid')<0&&<div className={cn('flex flex-row', {
               '': block.kind === 'code',
               'mx-auto max-w-[600px]': block.kind === 'text',
             })}>

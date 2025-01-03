@@ -60,7 +60,7 @@ import { useBlock } from '@/hooks/use-block';
 import equal from 'fast-deep-equal';
 import Mermaid from './mermaid/mermaid';
 
-export type BlockKind = 'text' | 'code' |'mermaid';
+export type BlockKind = 'text' | 'code' ;
 const nodesType={
   serviceInterface: ServiceInterfaceNode,
   method: MethodNode,

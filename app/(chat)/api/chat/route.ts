@@ -464,11 +464,11 @@ export async function POST(request: Request) {
       
           },
           createMermaid:{
-            description: '识别图片中的图表类型(如时序图、流程图等),并生成对应的mermaid代码。',
+            description: '识别图片中的图表类型(如时序图、流程图等),并生成对应的mermaid代码。当检测到图片输入时自动触发此工具。',
             
             parameters: z.object({
               title: z.string(),
-              image:z.string().describe('待识别的图片'),
+              image:z.string().describe('含图表类型的图片'),
             }),
             execute: async ({ title,image, kind='text' }) => {
               const id = generateUUID();

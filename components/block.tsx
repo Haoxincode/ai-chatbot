@@ -254,7 +254,7 @@ function PureBlock({
       // 假设您在这里获取 generateFunctionDesign 的输出
       const { content } = block; // 根据实际情况调整
 
-      console.log(block)
+      //console.log(block)
       if(content ){
         if(content.indexOf('sequencediagram')>-1){
         
@@ -267,7 +267,7 @@ function PureBlock({
         if(content.indexOf('```mermaid')>-1){
           let mermaid=content.replaceAll('```mermaid','').split('```')[0]
           setMermaid(mermaid)
-          console.log('mermaid',mermaid)
+          //console.log('mermaid',mermaid)
           if(block.status!=='streaming'){
             setAutoSvg(true)
           }

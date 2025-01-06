@@ -467,8 +467,9 @@ export async function POST(request: Request) {
             description: 'Create a mermaid code for a writing activity.如果有图片识别图片的时序图并触发createmermaid。',
             parameters: z.object({
               title: z.string(),
+              image:z.string().describe('有图片识别图片的时序图内容'),
             }),
-            execute: async ({ title, kind='text' }) => {
+            execute: async ({ title,image, kind='text' }) => {
               const id = generateUUID();
               let draftText = '';
 
@@ -494,9 +495,21 @@ export async function POST(request: Request) {
 
               const { fullStream } = streamText({
                 model: customModel(model.apiIdentifier),
-                system:
-                  'Write mermaid about the given topic. ',
-                prompt: title,
+                system: `
+                  You are a specialized assistant for diagram recognition and mermaid code generation.
+                  1. First analyze the input image and identify its diagram type (sequence diagram, flowchart, class diagram, etc.)
+                  2. Based on the recognition result, generate corresponding standard mermaid code
+                  3. Output only the mermaid code, without any explanatory text
+                  4. Ensure the generated code complies with mermaid syntax specifications
+                  Rules:
+                  - For sequence diagrams: Use 'sequenceDiagram' syntax
+                  - For flowcharts: Use 'graph TD' or 'graph LR' syntax
+                  - For class diagrams: Use 'classDiagram' syntax
+                  - For state diagrams: Use 'stateDiagram-v2' syntax
+                  - For entity relationship diagrams: Use 'erDiagram' syntax
+                  Remember to maintain proper indentation and syntax structure in the generated code.
+              `,
+                prompt: title+"图片描述："+image,
               });
   
                   for await (const delta of fullStream) {

@@ -104,7 +104,7 @@ const Mermaid: React.FC<MermaidProps> = ({ chart ,setChart,data,setData,autoSvg,
     let match;
     if(chart.trim().startsWith('classDiagram')){
       while ((match = regex.exec(chart))) {
-        console.log(match[0],match[1]); // 这里的match[1]就是花括号内的内容
+       // console.log(match[0],match[1]); // 这里的match[1]就是花括号内的内容
         if(match[1].trim()==''){
             chart=chart.replace(match[0],'').trim()
             

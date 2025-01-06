@@ -249,6 +249,13 @@ function PureBlock({
   }
 
   let [mermaid,setMermaid]=useState('')
+
+  const updateMermaid=(mermaid:string)=>{
+    setMermaid(mermaid)
+    console.log(block.content)
+    saveContent("```mermaid"+mermaid+"```",true)
+  }
+
   let [autoSvg,setAutoSvg]=useState(false)
   useEffect(() => {
       // 假设您在这里获取 generateFunctionDesign 的输出
@@ -264,7 +271,7 @@ function PureBlock({
         if(content.indexOf('serviceInterface')>-1){
             parseInterface(content)
         }
-        if(content.indexOf('```mermaid')>-1){
+        if(content.indexOf('```mermaid')>-1||content.indexOf('sequenceDiagram')>-1||content.indexOf('graph')>-1){
           let mermaid=content.replaceAll('```mermaid','').split('```')[0]
           setMermaid(mermaid)
           //console.log('mermaid',mermaid)
@@ -649,7 +656,7 @@ function PureBlock({
           {
           mermaid&&
           ( <div className="prose dark:prose-invert dark:bg-muted bg-background px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
-            <Mermaid chart={mermaid} setChart={setMermaid} autoSvg={autoSvg}/>
+            <Mermaid chart={mermaid} setChart={updateMermaid} autoSvg={autoSvg}/>
           </div>)
         }
           {

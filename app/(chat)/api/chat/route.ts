@@ -464,10 +464,11 @@ export async function POST(request: Request) {
       
           },
           createMermaid:{
-            description: 'Create a mermaid code for a writing activity.如果有图片识别图片的时序图并触发createmermaid。',
+            description: '识别图片中的图表类型(如时序图、流程图等),并生成对应的mermaid代码。',
+            
             parameters: z.object({
               title: z.string(),
-              image:z.string().describe('有图片识别图片的时序图内容'),
+              image:z.string().describe('待识别的图片'),
             }),
             execute: async ({ title,image, kind='text' }) => {
               const id = generateUUID();
@@ -496,19 +497,26 @@ export async function POST(request: Request) {
               const { fullStream } = streamText({
                 model: customModel(model.apiIdentifier),
                 system: `
-                  You are a specialized assistant for diagram recognition and mermaid code generation.
-                  1. First analyze the input image and identify its diagram type (sequence diagram, flowchart, class diagram, etc.)
-                  2. Based on the recognition result, generate corresponding standard mermaid code
-                  3. Output only the mermaid code, without any explanatory text
-                  4. Ensure the generated code complies with mermaid syntax specifications
-                  Rules:
-                  - For sequence diagrams: Use 'sequenceDiagram' syntax
-                  - For flowcharts: Use 'graph TD' or 'graph LR' syntax
-                  - For class diagrams: Use 'classDiagram' syntax
-                  - For state diagrams: Use 'stateDiagram-v2' syntax
-                  - For entity relationship diagrams: Use 'erDiagram' syntax
-                  Remember to maintain proper indentation and syntax structure in the generated code.
-              `,
+                You are a specialized assistant for diagram recognition and mermaid code generation.
+                1. First analyze the input image and identify its diagram type (sequence diagram, flowchart, class diagram, stateDiagram, requirement diagram, erDiagram, etc.)
+                2. Based on the recognition result, generate corresponding standard mermaid code
+                3. Output only the mermaid code, without any explanatory text
+                4. Ensure the generated code complies with mermaid syntax specifications
+                
+                Rules:
+                - For sequence diagrams: Use 'sequenceDiagram' syntax
+                - For flowcharts: Use 'graph TD' or 'graph LR' syntax
+                - For class diagrams: Use 'classDiagram' syntax
+                - For state diagrams: Use 'stateDiagram-v2' syntax
+                - For entity relationship diagrams: Use 'erDiagram' syntax
+                - For requirement diagrams: Use 'requirementDiagram' syntax with:
+                    * requirement syntax: requirement [id] { text }
+                    * element syntax: element [id] { text }
+                    * relationship types: contains, copies, derives, satisfies, verifies, refines, traces
+                    * proper arrow syntax: |o--|, |--|>, etc.
+                
+                Remember to maintain proper indentation and syntax structure in the generated code.
+            `,
                 prompt: title+"图片描述："+image,
               });
   

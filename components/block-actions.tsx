@@ -1,6 +1,5 @@
-"use client"
 import { cn, generateUUID } from '@/lib/utils';
-import {ClockRewind, CopyIcon, DeltaIcon, PlayIcon,RedoIcon, UndoIcon } from './icons';
+import { ClockRewind, CopyIcon, DeltaIcon, PlayIcon, RedoIcon, UndoIcon } from './icons';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { useCopyToClipboard } from 'usehooks-ts';
@@ -28,6 +27,7 @@ interface BlockActionsProps {
   setConsoleOutputs: Dispatch<SetStateAction<Array<ConsoleOutput>>>;
 
 }
+
 export function RunCodeButton({
   block,
   setConsoleOutputs,

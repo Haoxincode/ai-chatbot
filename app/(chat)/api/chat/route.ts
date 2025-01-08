@@ -674,20 +674,20 @@ export async function POST(request: Request) {
                 content: document.title,
               });
 
-          if (document.kind === 'text') {
-            const { fullStream } = streamText({
-              model: customModel(model.apiIdentifier),
-              system: updateDocumentPrompt(currentContent),
-              prompt: description,
-              experimental_providerMetadata: {
-                openai: {
-                  prediction: {
-                    type: 'content',
-                    content: currentContent,
+              if (document.kind === 'text') {
+                const { fullStream } = streamText({
+                  model: customModel(model.apiIdentifier),
+                  system: updateDocumentPrompt(currentContent, 'text'),
+                  prompt: description,
+                  experimental_providerMetadata: {
+                    openai: {
+                      prediction: {
+                        type: 'content',
+                        content: currentContent,
+                      },
+                    },
                   },
-                },
-              },
-            });
+                });
 
                 for await (const delta of fullStream) {
                   const { type } = delta;
@@ -707,7 +707,7 @@ export async function POST(request: Request) {
               } else if (document.kind === 'code') {
                 const { fullStream } = streamObject({
                   model: customModel(model.apiIdentifier),
-                  system: updateDocumentPrompt(currentContent),
+                  system: updateDocumentPrompt(currentContent, 'code'),
                   prompt: description,
                   schema: z.object({
                     code: z.string(),

@@ -35,7 +35,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     //   label: 'in San Francisco?',
     //   action: 'What is the weather in San Francisco?',
     // },
-
     {
       title: '生成时序图',
       label: '根据输入的用例',

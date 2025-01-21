@@ -26,18 +26,6 @@ export const models: Array<Model> = [
     apiIdentifier: 'gemini-2.0-flash-exp',
     description: 'Nebula chat flash for EEA development',
   },
-/*   {
-    id: 'grok-2-1212',
-    label: 'Nebula Chat Flash',
-    apiIdentifier: 'grok-2-1212',
-    description: 'Nebula chat for EEA development',
-  }, */
-/*   {
-    id: 'grok-2-vision-1212',
-    label: 'Grok Vision Beta',
-    apiIdentifier: 'grok-2-vision-1212',
-    description: 'xAI\'s multimodal model supporting image input',
-  }, */
   {
     id: 'groq-llama',
     label: 'Nebula Chat Ultra ',

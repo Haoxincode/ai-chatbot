@@ -1,5 +1,4 @@
 import { openai } from '@ai-sdk/openai';
-import { xai } from '@ai-sdk/xai';
 import { groq } from '@ai-sdk/groq';
 import { google } from '@ai-sdk/google';
 import { experimental_wrapLanguageModel as wrapLanguageModel } from 'ai';
@@ -9,8 +8,6 @@ import { customMiddleware } from './custom-middleware';
 const selectProvider = (apiIdentifier: string) => {
   if (apiIdentifier.startsWith('gpt-') || apiIdentifier.startsWith('text-davinci-')) {
     return openai;
-  } else if (apiIdentifier.startsWith('grok-')) {
-    return xai;
   } else if (apiIdentifier === 'llama-3.3-70b-versatile') {
     return groq;
   } else if (apiIdentifier.startsWith('gemini-')) {

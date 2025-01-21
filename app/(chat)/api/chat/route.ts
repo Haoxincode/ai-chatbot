@@ -4,6 +4,7 @@ import {
   createDataStreamResponse,
   streamObject,
   streamText,
+  smoothStream,
 } from 'ai';
 import { z } from 'zod';
 
@@ -587,6 +588,10 @@ export async function POST(request: Request) {
           if (kind === 'text') {
             const { fullStream } = streamText({
               model: customModel(model.apiIdentifier),
+              experimental_transform: smoothStream({
+                delayInMs: 20, // optional: defaults to 10ms
+                chunking: 'line', // optional: defaults to 'word'
+              }),
               system:
                 'Write about the given topic. Markdown is supported. Use headings wherever appropriate.',
               prompt: title,
@@ -687,6 +692,10 @@ export async function POST(request: Request) {
                   model: customModel(model.apiIdentifier),
                   system: updateDocumentPrompt(currentContent, 'text'),
                   prompt: description,
+                  experimental_transform: smoothStream({
+                    delayInMs: 20, // optional: defaults to 10ms
+                    chunking: 'line', // optional: defaults to 'word'
+                  }),
                   experimental_providerMetadata: {
                     openai: {
                       prediction: {

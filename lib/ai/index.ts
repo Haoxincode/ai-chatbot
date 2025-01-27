@@ -26,3 +26,5 @@ export const customModel = (apiIdentifier: string) => {
   });
 };
 
+export const imageGenerationModel = openai.image('dall-e-3');
+

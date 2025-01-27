@@ -44,9 +44,6 @@ import { MultimodalInput } from './multimodal-input';
 import { Toolbar } from './toolbar';
 import { Button } from './ui/button';
 import { VersionFooter } from './version-footer';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-
-
 import { BlockActions } from './block-actions';
 import { BlockCloseButton } from './block-close-button';
 import { BlockMessages } from './block-messages';
@@ -58,9 +55,10 @@ import { Console } from './console';
 import { useSidebar } from './ui/sidebar';
 import { useBlock } from '@/hooks/use-block';
 import equal from 'fast-deep-equal';
+import { ImageEditor } from './image-editor';
 import Mermaid from './mermaid/mermaid';
 
-export type BlockKind = 'text' | 'code' ;
+export type BlockKind = 'text' | 'code'| 'image';
 const nodesType={
   serviceInterface: ServiceInterfaceNode,
   method: MethodNode,
@@ -542,7 +540,7 @@ function PureBlock({
           )}
 
           <motion.div
-            className="fixed dark:bg-muted bg-background h-dvh flex flex-col overflow-y-scroll border-l dark:border-zinc-700 border-zinc-200"
+            className="fixed dark:bg-muted bg-background h-dvh flex flex-col overflow-y-scroll md:border-l dark:border-zinc-700 border-zinc-200"
             initial={
               isMobile
                 ? {
@@ -647,22 +645,22 @@ function PureBlock({
           />
         </div>
 
-        <div
-          className={cn(
-            'prose dark:prose-invert dark:bg-muted bg-background h-full overflow-y-scroll !max-w-full pb-40 items-center',
-            {
-              'py-2 px-2': block.kind === 'code',
-              'py-8 md:p-20 px-4': block.kind === 'text',
-            },
-          )}
-        >
-          {
+            <div
+              className={cn(
+                'prose dark:prose-invert  dark:bg-muted bg-background h-full overflow-y-scroll !max-w-full pb-40 items-center',
+                {
+                  'py-2 px-2': block.kind === 'code',
+                  'py-8 md:p-20 px-4': block.kind === 'text',
+                },
+              )}
+            >
+              {
           mermaid&&
           ( <div className="prose dark:prose-invert dark:bg-muted bg-background px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
             <Mermaid chart={mermaid} setChart={updateMermaid} autoSvg={autoSvg}/>
           </div>)
         }
-          {
+               {
           diagramCode&&
           ( <div className="prose dark:prose-invert dark:bg-muted bg-background px-4 py-8 md:p-20 !max-w-full pb-40 items-center">
             {diagramCode && (
@@ -700,44 +698,60 @@ function PureBlock({
               'mx-auto max-w-[600px]': block.kind === 'text',
             })}>
        
-            {isDocumentsFetching && !block.content ? (
-              <DocumentSkeleton />
-            ) : block.kind === 'code' ? (
-              <CodeEditor
-                content={
-                  isCurrentVersion
-                    ? block.content
-                    : getDocumentContentById(currentVersionIndex)
-                }
-                isCurrentVersion={isCurrentVersion}
-                currentVersionIndex={currentVersionIndex}
-                suggestions={suggestions ?? []}
-                status={block.status}
-                saveContent={saveContent}
-              />
-            ) : block.kind === 'text' ? (
-              mode === 'edit' ? (
-                <Editor
-                  content={
-                    isCurrentVersion
-                      ? block.content
-                      : getDocumentContentById(currentVersionIndex)
-                  }
-                  isCurrentVersion={isCurrentVersion}
-                  currentVersionIndex={currentVersionIndex}
-                  status={block.status}
-                  saveContent={saveContent}
-                  suggestions={isCurrentVersion ? (suggestions ?? []) : []}
-                />
-              ) : (
-                <DiffView
-                  oldContent={getDocumentContentById(currentVersionIndex - 1)}
-                  newContent={getDocumentContentById(currentVersionIndex)}
-                />
-              )
-            ) : null}
+                {isDocumentsFetching && !block.content ? (
+                  <DocumentSkeleton blockKind={block.kind}/>
+                ) : block.kind === 'code' ? (
+                  <CodeEditor
+                    content={
+                      isCurrentVersion
+                        ? block.content
+                        : getDocumentContentById(currentVersionIndex)
+                    }
+                    isCurrentVersion={isCurrentVersion}
+                    currentVersionIndex={currentVersionIndex}
+                    suggestions={suggestions ?? []}
+                    status={block.status}
+                    saveContent={saveContent}
+                  />
+                ) : block.kind === 'text' ? (
+                  mode === 'edit' ? (
+                    <Editor
+                      content={
+                        isCurrentVersion
+                          ? block.content
+                          : getDocumentContentById(currentVersionIndex)
+                      }
+                      isCurrentVersion={isCurrentVersion}
+                      currentVersionIndex={currentVersionIndex}
+                      status={block.status}
+                      saveContent={saveContent}
+                      suggestions={isCurrentVersion ? (suggestions ?? []) : []}
+                    />
+                  ) : (
+                    <DiffView
+                      oldContent={getDocumentContentById(
+                        currentVersionIndex - 1,
+                      )}
+                      newContent={getDocumentContentById(currentVersionIndex)}
+                    />
+                  )
+                ) : block.kind === 'image' ? (
+                  <ImageEditor
+                    title={block.title}
+                    content={
+                      isCurrentVersion
+                        ? block.content
+                        : getDocumentContentById(currentVersionIndex)
+                    }
+                    isCurrentVersion={isCurrentVersion}
+                    currentVersionIndex={currentVersionIndex}
+                    status={block.status}
+                    isInline={false}
+                  />
+                ) : null}
 
-                {suggestions ? (
+
+                {suggestions && suggestions.length > 0 ? (
                   <div className="md:hidden h-dvh w-12 shrink-0" />
                 ) : null}
 

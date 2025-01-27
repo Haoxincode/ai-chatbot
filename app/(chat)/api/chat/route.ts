@@ -4,7 +4,6 @@
   createDataStreamResponse,
   smoothStream,
   streamText,
-  smoothStream,
 } from 'ai';
 
 import { auth } from '@/app/(auth)/auth';

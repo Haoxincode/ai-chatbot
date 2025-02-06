@@ -9,7 +9,7 @@ export type BlockActionContext<M = any> = {
   handleVersionChange: (type: 'next' | 'prev' | 'toggle' | 'latest') => void;
   currentVersionIndex: number;
   isCurrentVersion: boolean;
-  mode: 'edit' | 'diff';
+  mode: 'read-only'|'edit' | 'diff';
   metadata: M;
   setMetadata: Dispatch<SetStateAction<M>>;
 };

@@ -12,16 +12,14 @@ import { customModel, imageGenerationModel } from '..';
 import { codePrompt } from '../prompts';
 import { saveDocument } from '@/lib/db/queries';
 import { Session } from 'next-auth';
-import { Model } from '../models';
+import { myProvider } from '@/lib/ai/models';
 
 interface CreateDocumentProps {
-  model: Model;
   session: Session;
   dataStream: DataStreamWriter;
 }
 
 export const createMermaid = ({
-  model,
   session,
   dataStream,
 }: CreateDocumentProps) =>
@@ -58,7 +56,7 @@ export const createMermaid = ({
               });
 
               const { fullStream } = streamText({
-                model: customModel(model.apiIdentifier),
+                model: myProvider.languageModel('block-model'),
                 experimental_transform: smoothStream({ chunking: 'word' }),
                 system: `
                 You are a specialized assistant for diagram recognition and mermaid code generation.

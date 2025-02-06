@@ -6,17 +6,14 @@ import {
 import { z } from 'zod';
 import { saveDocument } from '@/lib/db/queries';
 import { Session } from 'next-auth';
-import { Model } from '../models';
 import { runDifyWorkflow } from './runDifyWorkflow';
 
 interface CreateDocumentProps {
-  model: Model;
   session: Session;
   dataStream: DataStreamWriter;
 }
 
 export const generateFunctionDesign = ({
-  model,
   session,
   dataStream,
 }: CreateDocumentProps) =>

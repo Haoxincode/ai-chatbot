@@ -638,8 +638,8 @@ function PureBlock({
                 mode={mode}
                 metadata={metadata}
                 setMetadata={setMetadata}
+                nodes={nodes}
                 serviceInterfaces={serviceInterfaces}
-                setConsoleOutputs={setConsoleOutputs}
               />
             </div>
 

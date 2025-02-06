@@ -97,7 +97,7 @@ export async function POST(request: Request) {
                 'getWeather',
                 'createDocument',
                 'updateDocument',
-                'requestSuggestions',
+                'requestSuggestions',"updateFunctionDesign",'generateFunctionDesign',"generateServiceInterfaces","updateServiceInterfaces",'createMermaid'
               ],
         experimental_transform: smoothStream({ chunking: 'word' }),
         experimental_generateMessageId: generateUUID,

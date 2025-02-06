@@ -2,18 +2,12 @@ import { cn, generateUUID } from '@/lib/utils';
 import { ClockRewind, CopyIcon, DeltaIcon, PlayIcon, RedoIcon, UndoIcon } from './icons';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { blockDefinitions, UIBlock } from './block';
+import { Dispatch, memo, SetStateAction, useState } from 'react';
+import { BlockActionContext } from './create-block';
 import { toast } from 'sonner';
-import { ConsoleOutput, UIBlock } from './block';
 import {downloadIDL,generateIDL}from './diagram'
 import { Download } from 'lucide-react';
-import {
-  Dispatch,
-  memo,
-  SetStateAction,
-} from 'react';
-import { RunCodeButton } from './run-code-button';
-import { useMultimodalCopyToClipboard } from '@/hooks/use-multimodal-copy-to-clipboard';
-
 
 interface BlockActionsProps {
   block: UIBlock;
@@ -23,8 +17,8 @@ interface BlockActionsProps {
   mode: 'read-only' | 'edit' | 'diff';
   nodes:any
   serviceInterfaces:any
-  setConsoleOutputs: Dispatch<SetStateAction<Array<ConsoleOutput>>>;
-
+  metadata: any;
+  setMetadata: Dispatch<SetStateAction<any>>;
 }
 
 function PureBlockActions({
@@ -33,11 +27,27 @@ function PureBlockActions({
   currentVersionIndex,
   isCurrentVersion,
   mode,nodes,serviceInterfaces,
-  
-  setConsoleOutputs,
+  metadata,
+  setMetadata,
 }: BlockActionsProps) {
-  const { copyTextToClipboard, copyImageToClipboard } =
-  useMultimodalCopyToClipboard();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const blockDefinition = blockDefinitions.find(
+    (definition) => definition.kind === block.kind,
+  );
+
+  if (!blockDefinition) {
+    throw new Error('Block definition not found!');
+  }
+  const actionContext: BlockActionContext = {
+    content: block.content,
+    handleVersionChange,
+    currentVersionIndex,
+    isCurrentVersion,
+    mode,
+    metadata,
+    setMetadata,
+  };
 
   const handleExport = () => {
     if (serviceInterfaces.length > 0) {
@@ -56,34 +66,42 @@ function PureBlockActions({
   };
   return (
     <div className="flex flex-row gap-1">
-      {block.kind === 'code' && (
-        <RunCodeButton block={block} setConsoleOutputs={setConsoleOutputs} />
-      )}
-      {block.kind === 'text' && (
-        <Tooltip>
+      {blockDefinition.actions.map((action) => (
+        <Tooltip key={action.description}>
           <TooltipTrigger asChild>
             <Button
               variant="outline"
-              className={cn(
-                'p-2 h-fit !pointer-events-auto dark:hover:bg-zinc-700',
-                {
-                  'bg-muted': mode === 'diff',
-                },
-              )}
-              onClick={() => {
-                handleVersionChange('toggle');
+              className={cn('h-fit dark:hover:bg-zinc-700', {
+                'p-2': !action.label,
+                'py-1.5 px-2': action.label,
+              })}
+              onClick={async () => {
+                setIsLoading(true);
+
+                try {
+                  await Promise.resolve(action.onClick(actionContext));
+                } catch (error) {
+                  toast.error('Failed to execute action');
+                } finally {
+                  setIsLoading(false);
+                }
               }}
               disabled={
-                block.status === 'streaming' || currentVersionIndex === 0
+                isLoading || block.status === 'streaming'
+                  ? true
+                  : action.isDisabled
+                    ? action.isDisabled(actionContext)
+                    : false
               }
             >
-              <ClockRewind size={18} />
+              {action.icon}
+              {action.label}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>View changes</TooltipContent>
+          <TooltipContent>{action.description}</TooltipContent>
         </Tooltip>
-      )}
- {block.content.indexOf("serviceInterface")>0 &&<Tooltip>
+      ))}
+{block.content.indexOf("serviceInterface")>0 &&<Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
@@ -100,78 +118,6 @@ function PureBlockActions({
               <TooltipContent>Export IDL</TooltipContent>
             </Tooltip>}
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="p-2 h-fit dark:hover:bg-zinc-700"
-            onClick={() => {
-              if (block.kind === 'image') {
-                copyImageToClipboard(block.content);
-              } else {
-                copyTextToClipboard(block.content);
-              }
-              toast.success('Copied to clipboard!');
-            }}
-            disabled={block.status === 'streaming'}
-          >
-            <CopyIcon size={18} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Copy to clipboard</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="p-2 h-fit dark:hover:bg-zinc-700 !pointer-events-auto"
-            onClick={() => {
-              handleVersionChange('prev');
-            }}
-            disabled={currentVersionIndex === 0 || block.status === 'streaming'}
-          >
-            <UndoIcon size={18} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>View Previous version</TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="p-2 h-fit dark:hover:bg-zinc-700 !pointer-events-auto"
-            onClick={() => {
-              handleVersionChange('next');
-            }}
-            disabled={isCurrentVersion || block.status === 'streaming'}
-          >
-            <RedoIcon size={18} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>View Next version</TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="p-2 h-fit dark:hover:bg-zinc-700"
-            onClick={() => {
-              if (block.kind === 'image') {
-                copyImageToClipboard(block.content);
-              } else {
-                copyTextToClipboard(block.content);
-              }
-              toast.success('Copied to clipboard!');
-            }}
-            disabled={block.status === 'streaming'}
-          >
-            <CopyIcon size={18} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Copy to clipboard</TooltipContent>
-      </Tooltip>
     </div>
   );
 }
@@ -181,6 +127,7 @@ export const BlockActions = memo(PureBlockActions, (prevProps, nextProps) => {
   if (prevProps.currentVersionIndex !== nextProps.currentVersionIndex)
     return false;
   if (prevProps.isCurrentVersion !== nextProps.isCurrentVersion) return false;
+  if (prevProps.block.content !== nextProps.block.content) return false;
 
   return true;
 });

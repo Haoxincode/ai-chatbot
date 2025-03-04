@@ -74,66 +74,66 @@ export function DataStreamHandler({ id }: { id: string }) {
 
           case 'text-delta':
             return {
-              ...draftBlock,
-              content: draftBlock.content + (delta.content as string),
+              ...draftArtifact,
+              content: draftArtifact.content + (delta.content as string),
               isVisible:
-                draftBlock.status === 'streaming' &&
-                draftBlock.content.length > 400 &&
-                draftBlock.content.length < 450
+                draftArtifact.status === 'streaming' &&
+                draftArtifact.content.length > 400 &&
+                draftArtifact.content.length < 450
                   ? true
-                  : draftBlock.isVisible,
+                  : draftArtifact.isVisible,
               status: 'streaming',
             };
 
           case 'code-delta':
             return {
-              ...draftBlock,
+              ...draftArtifact,
               content: delta.content as string,
               isVisible:
-                draftBlock.status === 'streaming' &&
-                draftBlock.content.length > 300 &&
-                draftBlock.content.length < 310
+                draftArtifact.status === 'streaming' &&
+                draftArtifact.content.length > 300 &&
+                draftArtifact.content.length < 310
                   ? true
-                  : draftBlock.isVisible,
+                  : draftArtifact.isVisible,
               status: 'streaming',
             };
 
           case 'image-delta':
             return {
-              ...draftBlock,
+              ...draftArtifact,
               content: delta.content as string,
               isVisible: true,
               status: 'streaming',
             };
             case 'mermaid':
               return {
-                ...draftBlock,
-                content: draftBlock.content + (delta.content as string),
+                ...draftArtifact,
+                content: draftArtifact.content + (delta.content as string),
                 isVisible:
-                  draftBlock.status === 'streaming' &&
-                  draftBlock.content.length > 100 
+                  draftArtifact.status === 'streaming' &&
+                  draftArtifact.content.length > 100 
                     ? true
-                    : draftBlock.isVisible,
+                    : draftArtifact.isVisible,
                 status: 'streaming',
               };
             case 'diagram':
               return {
-                ...draftBlock,
+                ...draftArtifact,
                 content: delta.content as string,
                 isVisible:
-                  draftBlock.status === 'streaming' &&
-                  draftBlock.content ? true
-                    : draftBlock.isVisible,
+                  draftArtifact.status === 'streaming' &&
+                  draftArtifact.content ? true
+                    : draftArtifact.isVisible,
                 status: 'streaming',
               };
             case 'design':
               return {
-                ...draftBlock,
+                ...draftArtifact,
                 content: delta.content as string,
                 isVisible:
-                  draftBlock.status === 'streaming' &&
-                  draftBlock.content? true
-                    : draftBlock.isVisible,
+                  draftArtifact.status === 'streaming' &&
+                  draftArtifact.content? true
+                    : draftArtifact.isVisible,
                 status: 'streaming',
               };
 

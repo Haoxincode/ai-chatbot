@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { fireworks } from '@ai-sdk/fireworks';
+import { deepseek } from '@ai-sdk/deepseek';
 import {
   customProvider,
   extractReasoningMiddleware,
@@ -10,19 +10,19 @@ export const DEFAULT_CHAT_MODEL: string = 'chat-model-small';
 
 export const myProvider = customProvider({
   languageModels: {
-    'chat-model-small': openai('gpt-4o-mini'),
-    'chat-model-large': openai('gpt-4o'),
+    'chat-model-small': deepseek('deepseek-chat'),
+    'chat-model-large': deepseek('deepseek-chat'),
     'chat-model-reasoning': wrapLanguageModel({
-      model: fireworks('accounts/fireworks/models/deepseek-r1'),
+      model: deepseek('deepseek-reasoner'),
       middleware: extractReasoningMiddleware({ tagName: 'think' }),
     }),
-    'title-model': openai('gpt-4-turbo'),
-    'block-model': openai('gpt-4o-mini'),
+    'title-model': deepseek('deepseek-chat'),
+    'block-model': deepseek('deepseek-chat'),
   },
-  imageModels: {
+/*   imageModels: {
     'small-model': openai.image('dall-e-2'),
     'large-model': openai.image('dall-e-3'),
-  },
+  }, */
 });
 
 interface ChatModel {
@@ -34,41 +34,17 @@ interface ChatModel {
 export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model-small',
-    name: 'Small model',
-    description: 'Small model for fast, lightweight tasks',
+    name: 'Nebula Chat Flash',
+    description: 'Small model for fast, lightweight tasks for EEA development',
   },
   {
     id: 'chat-model-large',
-    name: 'Large model',
-    description: 'Large model for complex, multi-step tasks',
+    name: 'Nebula Chat Plus',
+    description: 'Large model for complex, multi-step tasks for EEA development',
   },
   {
     id: 'chat-model-reasoning',
-    name: 'Reasoning model',
-    description: 'Uses advanced reasoning',
+    name: 'Nebula Reasoning model',
+    description: 'Uses advanced reasoning for EEA development',
   },
-  {
-    id: 'gpt-4o-mini',
-    name: 'Nebula Chat Plus',
-    description: 'Nebula chat plus for EEA development',
-  },
-  // {
-  //   id: 'gpt-4o',
-  //   name: 'GPT 4o',
-  //   description: 'For complex, multi-step tasks',
-  // },
-  {
-    id: 'gemini-2-flash',
-    name: 'Nebula Chat Flash',
-    //apiIdentifier: 'gemini-2.0-flash-exp',
-    description: 'Nebula chat flash for EEA development',
-  },
-  {
-    id: 'groq-llama',
-    name: 'Nebula Chat Ultra ',
-    //apiIdentifier: 'llama-3.3-70b-versatile',
-    description: 'Nebula chat ultra for EEA development ',
-  }
-] as const;
-
-export const DEFAULT_MODEL_NAME: string = 'gpt-4o-mini';
+];

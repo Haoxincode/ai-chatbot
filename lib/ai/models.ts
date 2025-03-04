@@ -1,4 +1,3 @@
-import { openai } from '@ai-sdk/openai';
 import { deepseek } from '@ai-sdk/deepseek';
 import {
   customProvider,
@@ -17,7 +16,7 @@ export const myProvider = customProvider({
       middleware: extractReasoningMiddleware({ tagName: 'think' }),
     }),
     'title-model': deepseek('deepseek-chat'),
-    'block-model': deepseek('deepseek-chat'),
+    'artifact-model': deepseek('deepseek-chat'),
   },
 /*   imageModels: {
     'small-model': openai.image('dall-e-2'),

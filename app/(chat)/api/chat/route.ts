@@ -31,27 +31,6 @@ import {generateServiceInterfaces} from '@/lib/ai/tools/generate-serviceInterfac
 import {updateServiceInterfaces} from '@/lib/ai/tools/update-serviceInterfaces'
 import { createMermaid } from '@/lib/ai/tools/create-mermaid';
 
-export const maxDuration = 60;
-
-type AllowedTools =
-  | 'createDocument'
-  | 'updateDocument'
-  | 'requestSuggestions'
-  | 'generateFunctionDesign'|"generateServiceInterfaces"|
-  "updateFunctionDesign"|"updateServiceInterfaces"|'createMermaid'
- | 'getWeather';
-
-const blocksTools: AllowedTools[] = [
-  'createDocument',
-  'updateDocument',
-  'requestSuggestions',
-  "updateFunctionDesign",'generateFunctionDesign',"generateServiceInterfaces","updateServiceInterfaces",'createMermaid'
-
-];
-
-const weatherTools: AllowedTools[] = ['getWeather'];
-const allTools: AllowedTools[] = [...blocksTools, ...weatherTools];
-
 export async function POST(request: Request) {
   const {
     id,
@@ -145,6 +124,8 @@ export async function POST(request: Request) {
           functionId: 'stream-text',
         },
       });
+
+      result.consumeStream();
 
       result.mergeIntoDataStream(dataStream, {
         sendReasoning: true,

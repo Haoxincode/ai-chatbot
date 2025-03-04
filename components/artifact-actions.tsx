@@ -1,16 +1,15 @@
 import { cn, generateUUID } from '@/lib/utils';
-import { ClockRewind, CopyIcon, DeltaIcon, PlayIcon, RedoIcon, UndoIcon } from './icons';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { blockDefinitions, UIBlock } from './block';
+import { artifactDefinitions, UIArtifact } from './artifact';
 import { Dispatch, memo, SetStateAction, useState } from 'react';
-import { BlockActionContext } from './create-block';
+import { ArtifactActionContext } from './create-artifact';
 import { toast } from 'sonner';
 import {downloadIDL,generateIDL}from './diagram'
 import { Download } from 'lucide-react';
 
-interface BlockActionsProps {
-  block: UIBlock;
+interface ArtifactActionsProps {
+  artifact: UIArtifact;
   handleVersionChange: (type: 'next' | 'prev' | 'toggle' | 'latest') => void;
   currentVersionIndex: number;
   isCurrentVersion: boolean;
@@ -21,26 +20,27 @@ interface BlockActionsProps {
   setMetadata: Dispatch<SetStateAction<any>>;
 }
 
-function PureBlockActions({
-  block,
+function PureArtifactActions({
+  artifact,
   handleVersionChange,
   currentVersionIndex,
   isCurrentVersion,
   mode,nodes,serviceInterfaces,
   metadata,
   setMetadata,
-}: BlockActionsProps) {
+}: ArtifactActionsProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const blockDefinition = blockDefinitions.find(
-    (definition) => definition.kind === block.kind,
+  const artifactDefinition = artifactDefinitions.find(
+    (definition) => definition.kind === artifact.kind,
   );
 
-  if (!blockDefinition) {
-    throw new Error('Block definition not found!');
+  if (!artifactDefinition) {
+    throw new Error('Artifact definition not found!');
   }
-  const actionContext: BlockActionContext = {
-    content: block.content,
+
+  const actionContext: ArtifactActionContext = {
+    content: artifact.content,
     handleVersionChange,
     currentVersionIndex,
     isCurrentVersion,
@@ -54,8 +54,8 @@ function PureBlockActions({
       const idl = generateIDL(serviceInterfaces);
       downloadIDL(idl);
     } else {
-      if(block.content.indexOf('serviceInterface')>-1){
-        let service=JSON.parse(block.content)
+      if(artifact.content.indexOf('serviceInterface')>-1){
+        let service=JSON.parse(artifact.content)
         if(service &&service.serviceInterface){
           const idl = generateIDL(service.serviceInterface);
           downloadIDL(idl);
@@ -66,7 +66,7 @@ function PureBlockActions({
   };
   return (
     <div className="flex flex-row gap-1">
-      {blockDefinition.actions.map((action) => (
+      {artifactDefinition.actions.map((action) => (
         <Tooltip key={action.description}>
           <TooltipTrigger asChild>
             <Button
@@ -87,7 +87,7 @@ function PureBlockActions({
                 }
               }}
               disabled={
-                isLoading || block.status === 'streaming'
+                isLoading || artifact.status === 'streaming'
                   ? true
                   : action.isDisabled
                     ? action.isDisabled(actionContext)
@@ -101,7 +101,7 @@ function PureBlockActions({
           <TooltipContent>{action.description}</TooltipContent>
         </Tooltip>
       ))}
-{block.content.indexOf("serviceInterface")>0 &&<Tooltip>
+{artifact.content.indexOf("serviceInterface")>0 &&<Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
@@ -110,7 +110,7 @@ function PureBlockActions({
                     handleExport();
                     toast.success('download success!');
                   }}
-                  disabled={block.status === 'streaming'}
+                  disabled={artifact.status === 'streaming'}
                 >
                   <Download size={18} />
                 </Button>
@@ -122,12 +122,15 @@ function PureBlockActions({
   );
 }
 
-export const BlockActions = memo(PureBlockActions, (prevProps, nextProps) => {
-  if (prevProps.block.status !== nextProps.block.status) return false;
-  if (prevProps.currentVersionIndex !== nextProps.currentVersionIndex)
-    return false;
-  if (prevProps.isCurrentVersion !== nextProps.isCurrentVersion) return false;
-  if (prevProps.block.content !== nextProps.block.content) return false;
+export const ArtifactActions = memo(
+  PureArtifactActions,
+  (prevProps, nextProps) => {
+    if (prevProps.artifact.status !== nextProps.artifact.status) return false;
+    if (prevProps.currentVersionIndex !== nextProps.currentVersionIndex)
+      return false;
+    if (prevProps.isCurrentVersion !== nextProps.isCurrentVersion) return false;
+    if (prevProps.artifact.content !== nextProps.artifact.content) return false;
 
-  return true;
-});
+    return true;
+  },
+);

@@ -26,7 +26,7 @@ import {
   type SetStateAction,
   useCallback,
   useEffect,
-  useState,useRef
+  useState, useRef
 } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { toast } from 'sonner';
@@ -38,31 +38,33 @@ import { cn, fetcher } from '@/lib/utils';
 
 import { DiffView } from './diffview';
 import { DocumentSkeleton } from './document-skeleton';
-import { Editor } from './editor';
 import { MultimodalInput } from './multimodal-input';
 import { Toolbar } from './toolbar';
 import { Button } from './ui/button';
 import { VersionFooter } from './version-footer';
-import { BlockActions } from './block-actions';
-import { BlockCloseButton } from './block-close-button';
-import { BlockMessages } from './block-messages';
-import ReactMarkdown from 'react-markdown'
-
-import Diagram from '@zenuml/core'
-import { CodeEditor } from './code-editor';
-import { Console } from './console';
+import { ArtifactActions } from './artifact-actions';
+import { ArtifactCloseButton } from './artifact-close-button';
+import { ArtifactMessages } from './artifact-messages';
 import { useSidebar } from './ui/sidebar';
-import { useBlock } from '@/hooks/use-block';
-import { imageBlock } from '@/blocks/image/client';
-import { codeBlock } from '@/blocks/code/client';
-import { sheetBlock } from '@/blocks/sheet/client';
-import { textBlock } from '@/blocks/text/client';
+import { useArtifact } from '@/hooks/use-artifact';
+import { imageArtifact } from '@/artifacts/image/client';
+import { codeArtifact } from '@/artifacts/code/client';
+import { sheetArtifact } from '@/artifacts/sheet/client';
+import { textArtifact } from '@/artifacts/text/client';
 import equal from 'fast-deep-equal';
 import { ImageEditor } from './image-editor';
 import Mermaid from './mermaid/mermaid';
+import ReactMarkdown from 'react-markdown';
+import Diagram from '@zenuml/core'
 
-export const blockDefinitions = [textBlock, codeBlock, imageBlock, sheetBlock];
-export type BlockKind = (typeof blockDefinitions)[number]['kind'];
+
+export const artifactDefinitions = [
+  textArtifact,
+  codeArtifact,
+  imageArtifact,
+  sheetArtifact,
+];
+export type ArtifactKind = (typeof artifactDefinitions)[number]['kind'];
 
 const nodesType={
   serviceInterface: ServiceInterfaceNode,
@@ -93,10 +95,10 @@ interface ZenUMLRendererProps {
       />
     )
   }
-export interface UIBlock {
+export interface UIArtifact {
   title: string;
   documentId: string;
-  kind: BlockKind;
+  kind: ArtifactKind;
   content: string;
   sequenceDiagram?:any
   isVisible: boolean;
@@ -109,7 +111,7 @@ export interface UIBlock {
   };
 }
 
-function PureBlock({
+function PureArtifact({
   chatId,
   input,
   setInput,
@@ -150,15 +152,15 @@ function PureBlock({
   ) => Promise<string | null | undefined>;
   isReadonly: boolean;
 }) {
-  const { block, setBlock, metadata, setMetadata } = useBlock();
+  const { artifact, setArtifact, metadata, setMetadata } = useArtifact();
 
   const {
     data: documents,
     isLoading: isDocumentsFetching,
     mutate: mutateDocuments,
   } = useSWR<Array<Document>>(
-    block.documentId !== 'init' && block.status !== 'streaming'
-      ? `/api/document?id=${block.documentId}`
+    artifact.documentId !== 'init' && artifact.status !== 'streaming'
+      ? `/api/document?id=${artifact.documentId}`
       : null,
     fetcher,
   );
@@ -176,17 +178,17 @@ function PureBlock({
       if (mostRecentDocument) {
         setDocument(mostRecentDocument);
         setCurrentVersionIndex(documents.length - 1);
-        setBlock((currentBlock) => ({
-          ...currentBlock,
+        setArtifact((currentArtifact) => ({
+          ...currentArtifact,
           content: mostRecentDocument.content ?? '',
         }));
       }
     }
-  }, [documents, setBlock]);
+  }, [documents, setArtifact]);
 
   useEffect(() => {
     mutateDocuments();
-  }, [block.status, mutateDocuments]);
+  }, [artifact.status, mutateDocuments]);
 
 
   const [diagramCode, setDiagramCode] = useState<string | null>(null);
@@ -236,16 +238,16 @@ function PureBlock({
 
   const updateMermaid=(mermaid:string)=>{
     setMermaid(mermaid)
-    console.log(block.content)
+    console.log(artifact.content)
     saveContent("```mermaid"+mermaid+"```",true)
   }
 
   let [autoSvg,setAutoSvg]=useState(false)
   useEffect(() => {
       // 假设您在这里获取 generateFunctionDesign 的输出
-      const { content } = block; // 根据实际情况调整
+      const { content } = artifact; // 根据实际情况调整
 
-      //console.log(block)
+      //console.log(artifact)
       if(content ){
         if(content.indexOf('sequencediagram')>-1){
         
@@ -259,7 +261,7 @@ function PureBlock({
           let mermaid=content.replaceAll('```mermaid','').split('```')[0]
           setMermaid(mermaid)
           //console.log('mermaid',mermaid)
-          if(block.status!=='streaming'){
+          if(artifact.status!=='streaming'){
             setAutoSvg(true)
           }
         }
@@ -268,7 +270,7 @@ function PureBlock({
         if (documents && documents.length > 0) {
           const mostRecentDocument = documents[documents.length-2];
           console.log(mostRecentDocument)
-            if(block.title!==mostRecentDocument?.title){
+            if(artifact.title!==mostRecentDocument?.title){
               setDiagramCode('')
               setNodes([])
             }
@@ -305,16 +307,16 @@ function PureBlock({
        
       // }
       
-  }, [block]);
+  }, [artifact]);
   const { mutate } = useSWRConfig();
   const [isContentDirty, setIsContentDirty] = useState(false);
 
   const handleContentChange = useCallback(
     (updatedContent: string) => {
-      if (!block) return;
+      if (!artifact) return;
 
       mutate<Array<Document>>(
-        `/api/document?id=${block.documentId}`,
+        `/api/document?id=${artifact.documentId}`,
         async (currentDocuments) => {
           if (!currentDocuments) return undefined;
 
@@ -326,12 +328,12 @@ function PureBlock({
           }
 
           if (currentDocument.content !== updatedContent) {
-            await fetch(`/api/document?id=${block.documentId}`, {
+            await fetch(`/api/document?id=${artifact.documentId}`, {
               method: 'POST',
               body: JSON.stringify({
-                title: block.title,
+                title: artifact.title,
                 content: updatedContent,
-                kind: block.kind,
+                kind: artifact.kind,
               }),
             });
 
@@ -350,7 +352,7 @@ function PureBlock({
         { revalidate: false },
       );
     },
-    [block, mutate],
+    [artifact, mutate],
   );
 
   const debouncedHandleContentChange = useDebounceCallback(
@@ -429,27 +431,27 @@ function PureBlock({
 
   const { width: windowWidth, height: windowHeight } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
-  const blockDefinition = blockDefinitions.find(
-    (definition) => definition.kind === block.kind,
+  const artifactDefinition = artifactDefinitions.find(
+    (definition) => definition.kind === artifact.kind,
   );
 
-  if (!blockDefinition) {
-    throw new Error('Block definition not found!');
+  if (!artifactDefinition) {
+    throw new Error('Artifact definition not found!');
   }
 
   useEffect(() => {
-    if (block.documentId !== 'init') {
-      if (blockDefinition.initialize) {
-        blockDefinition.initialize({
-          documentId: block.documentId,
+    if (artifact.documentId !== 'init') {
+      if (artifactDefinition.initialize) {
+        artifactDefinition.initialize({
+          documentId: artifact.documentId,
           setMetadata,
         });
       }
     }
-  }, [block.documentId, blockDefinition, setMetadata]);
+  }, [artifact.documentId, artifactDefinition, setMetadata]);
   return (
     <AnimatePresence>
-      {block.isVisible && (
+      {artifact.isVisible && (
         <motion.div
           className="flex flex-row h-dvh w-dvw fixed top-0 left-0 z-50 bg-transparent"
           initial={{ opacity: 1 }}
@@ -504,17 +506,17 @@ function PureBlock({
                 )}
               </AnimatePresence>
 
-          <div className="flex flex-col h-full justify-between items-center gap-4">
-            <BlockMessages
-              chatId={chatId}
-              isLoading={isLoading}
-              votes={votes}
-              messages={messages}
-              setMessages={setMessages}
-              reload={reload}
-              isReadonly={isReadonly}
-              blockStatus={block.status}
-            />
+              <div className="flex flex-col h-full justify-between items-center gap-4">
+                <ArtifactMessages
+                  chatId={chatId}
+                  isLoading={isLoading}
+                  votes={votes}
+                  messages={messages}
+                  setMessages={setMessages}
+                  reload={reload}
+                  isReadonly={isReadonly}
+                  artifactStatus={artifact.status}
+                />
 
                 <form className="flex flex-row gap-2 relative items-end w-full px-4 pb-4">
                   <MultimodalInput
@@ -542,18 +544,18 @@ function PureBlock({
               isMobile
                 ? {
                     opacity: 1,
-                    x: block.boundingBox.left,
-                    y: block.boundingBox.top,
-                    height: block.boundingBox.height,
-                    width: block.boundingBox.width,
+                    x: artifact.boundingBox.left,
+                    y: artifact.boundingBox.top,
+                    height: artifact.boundingBox.height,
+                    width: artifact.boundingBox.width,
                     borderRadius: 50,
                   }
                 : {
                     opacity: 1,
-                    x: block.boundingBox.left,
-                    y: block.boundingBox.top,
-                    height: block.boundingBox.height,
-                    width: block.boundingBox.width,
+                    x: artifact.boundingBox.left,
+                    y: artifact.boundingBox.top,
+                    height: artifact.boundingBox.height,
+                    width: artifact.boundingBox.width,
                     borderRadius: 50,
                   }
             }
@@ -605,10 +607,10 @@ function PureBlock({
           >
             <div className="p-2 flex flex-row justify-between items-start">
               <div className="flex flex-row gap-4 items-start">
-                <BlockCloseButton />
+                <ArtifactCloseButton />
 
                 <div className="flex flex-col">
-                  <div className="font-medium">{block.title}</div>
+                  <div className="font-medium">{artifact.title}</div>
 
                   {isContentDirty ? (
                     <div className="text-sm text-muted-foreground">
@@ -630,8 +632,8 @@ function PureBlock({
                 </div>
               </div>
 
-              <BlockActions
-                block={block}
+              <ArtifactActions
+                artifact={artifact}
                 currentVersionIndex={currentVersionIndex}
                 handleVersionChange={handleVersionChange}
                 isCurrentVersion={isCurrentVersion}
@@ -684,42 +686,42 @@ function PureBlock({
           <MiniMap />
         </ReactFlow></div>
       )}
-          {!diagramCode&&nodes.length<1 &&<blockDefinition.content
-                title={block.title}
+          {!diagramCode&&nodes.length<1 &&<artifactDefinition.content
+                title={artifact.title}
                 content={
                   isCurrentVersion
-                    ? block.content
+                    ? artifact.content
                     : getDocumentContentById(currentVersionIndex)
                 }
                 mode={mode}
-                status={block.status}
+                status={artifact.status}
                 currentVersionIndex={currentVersionIndex}
                 suggestions={[]}
                 onSaveContent={saveContent}
                 isInline={false}
                 isCurrentVersion={isCurrentVersion}
                 getDocumentContentById={getDocumentContentById}
-                isLoading={isDocumentsFetching && !block.content}
+                isLoading={isDocumentsFetching && !artifact.content}
                 metadata={metadata}
                 setMetadata={setMetadata}
               />
 }
               
 
-                <AnimatePresence>
-                  {isCurrentVersion && (
-                    <Toolbar
-                      isToolbarVisible={isToolbarVisible}
-                      setIsToolbarVisible={setIsToolbarVisible}
-                      append={append}
-                      isLoading={isLoading}
-                      stop={stop}
-                      setMessages={setMessages}
-                      blockKind={block.kind}
-                    />
-                  )}
-                </AnimatePresence>
-              </div>
+              <AnimatePresence>
+                {isCurrentVersion && (
+                  <Toolbar
+                    isToolbarVisible={isToolbarVisible}
+                    setIsToolbarVisible={setIsToolbarVisible}
+                    append={append}
+                    isLoading={isLoading}
+                    stop={stop}
+                    setMessages={setMessages}
+                    artifactKind={artifact.kind}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
 
             <AnimatePresence>
               {!isCurrentVersion && (
@@ -737,7 +739,7 @@ function PureBlock({
   );
 }
 
-export const Block = memo(PureBlock, (prevProps, nextProps) => {
+export const Artifact = memo(PureArtifact, (prevProps, nextProps) => {
   if (prevProps.isLoading !== nextProps.isLoading) return false;
   if (!equal(prevProps.votes, nextProps.votes)) return false;
   if (prevProps.input !== nextProps.input) return false;
